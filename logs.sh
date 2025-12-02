@@ -11,7 +11,8 @@ else
 fi
 
 declare -A MAP=(
-  ["pony"]="benchmarks/pony_bench/docker-compose.yml"
+  ["pony"]="benchmarks/pony_bench/docker-compose.yaml"
+  ["sqlalchemy"]="benchmarks/sqlalchemy_bench/docker-compose.yaml"
 )
 
 if [ "$#" -ne 1 ]; then

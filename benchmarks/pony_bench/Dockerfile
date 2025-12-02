@@ -4,7 +4,7 @@ FROM python:3.12-slim-bookworm AS builder
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-WORKDIR /app
+WORKDIR /pony_bench
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends  \
@@ -14,7 +14,7 @@ RUN apt-get update && \
 
 COPY requirements.txt ./
 RUN pip install --upgrade pip && \
-    pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt && \
+    pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
 
 # ─────────────────────────────── Runtime ──────────────────────────────────────
@@ -28,7 +28,7 @@ RUN apt-get update && \
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /pony_bench
 
 COPY --from=builder /wheels /wheels
 COPY requirements.txt ./
@@ -37,6 +37,7 @@ RUN pip install --no-cache-dir --no-index --find-links /wheels \
     rm -rf /wheels
 
 COPY . .
+RUN chmod +x /pony_bench/run-tests.sh
 
 RUN printf '%s\n' '#!/bin/sh' \
     'set -e' \
