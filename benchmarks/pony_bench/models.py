@@ -40,6 +40,7 @@ class Ticket(db.Entity):
   composite_key(book_ref, passenger_id, outbound)
 
   segments = Set('Segment', reverse='ticket_no')
+  boarding_passes = Set('BoardingPass', reverse='ticket_no')
 
 
 class Flight(db.Entity):
@@ -56,6 +57,7 @@ class Flight(db.Entity):
   composite_key(route_no, scheduled_departure)
 
   segments = Set('Segment', reverse='flight_id')
+  boarding_passes = Set('BoardingPass', reverse='flight_id')
 
 
 class Segment(db.Entity):
