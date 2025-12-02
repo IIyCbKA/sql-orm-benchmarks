@@ -45,10 +45,10 @@ view live output with the helper script:
 You can also run the equivalent directly:
 ```bash
 # with modern docker
-docker compose -f benchmarks/<solution>/docker-compose.yml logs -f runner
+docker compose -f <path_to_compose>/docker-compose.yml logs -f runner
 
 # or with older docker-compose
-docker-compose -f benchmarks/<solution>/docker-compose.yml logs -f runner
+docker-compose -f <path_to_compose>/docker-compose.yml logs -f runner
 ```
 
 List of existing solutions available for start/stop/logs (use the solution 
