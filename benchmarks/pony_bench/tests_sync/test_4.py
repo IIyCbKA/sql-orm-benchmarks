@@ -13,9 +13,8 @@ def main() -> None:
 
   with db_session():
     try:
-      matched = Booking.select(lambda b:
-        amount_low <= b.total_amount <= amount_high
-        and b.book_date >= date_from
+      Booking.select(lambda b:
+        amount_low <= b.total_amount <= amount_high and b.book_date >= date_from
       ).count()
     except Exception:
       pass
@@ -23,13 +22,9 @@ def main() -> None:
   end = time.time()
   elapsed = end - start
 
-  rows_per_sec = matched / elapsed
-  rows_per_min = rows_per_sec * 60.0
-
   print(
-    f'PonyORM. Test 4.\n'
-    f'matched={matched}; elapsed_sec={elapsed:.4f};'
-    f'rpm={rows_per_min:.2f}; rps={rows_per_sec:.2f}'
+    f'PonyORM. Test 4. Filter large\n'
+    f'elapsed_sec={elapsed:.4f};'
   )
 
 
