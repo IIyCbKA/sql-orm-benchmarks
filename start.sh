@@ -12,35 +12,41 @@ else
 fi
 
 declare -A MAP=(
-  ["pony"]="benchmarks/pony_bench/docker-compose.yaml"
-  ["sqlalchemy"]="benchmarks/sqlalchemy_bench/docker-compose.yaml"
+  ["pony"]="./benchmarks/pony_bench"
+  ["sqlalchemy"]="./benchmarks/sqlalchemy_bench"
 )
 
 NAME="${1:-}"
+MODE="${2:-sync}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <solution-name>"
+  echo "Usage: $0 <solution-name> [sync|async]"
   echo "Available: ${!MAP[@]}"
   exit 1
 fi
 
-COMPOSE_FILE="${MAP[$NAME]:-}"
-
-if [ -z "$COMPOSE_FILE" ]; then
+CONTEXT="${MAP[$NAME]:-}"
+if [ -z "$CONTEXT" ]; then
   echo "ERROR: unknown solution name: '$NAME'. Available: ${!MAP[@]}" >&2
   exit 2
 fi
 
-if [ ! -f "$COMPOSE_FILE" ]; then
-  echo "ERROR: compose file not found: $COMPOSE_FILE" >&2
-  echo "Please adjust the PATH in start.sh MAP or run from repo root." >&2
-  exit 3
-fi
+case "$MODE" in
+  sync|async) ;;
+  *)
+    echo "ERROR: unknown mode: '$MODE'. Use 'sync' or 'async'." >&2
+    exit 3
+    ;;
+esac
+
+export RUNNER_BUILD_CONTEXT="$CONTEXT"
+export RUNNER_NAME="$NAME"
+export RUNNER_COMMAND="$MODE"
 
 echo "Using compose command: $DC"
-echo "Starting '$NAME' using $COMPOSE_FILE ..."
+echo "Starting '$NAME' (mode: $MODE) with context '$CONTEXT' ..."
 
-$DC -f "$COMPOSE_FILE" up -d --build
+$DC -f docker-compose.yaml up -d --build
 
 echo
-echo "Done. To follow logs: $DC -f $COMPOSE_FILE logs -f"
+echo "Done. To follow logs: $DC -f docker-compose.yaml logs -f"
 echo "To stop and remove containers+volumes: ./stop.sh $NAME"

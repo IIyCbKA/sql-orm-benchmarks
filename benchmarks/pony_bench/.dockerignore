@@ -12,8 +12,4 @@ __pycache__/
 
 # config & ignore
 Dockerfile
-docker-compose.yaml
 .dockerignore
-
-# environment variables
-.env*

@@ -21,14 +21,26 @@ https://hub.docker.com/repository/docker/iiycbka/sql-orm-benchmarks-db.
 **IMPORTANT NOTE:** On each fresh run of `docker-compose` you must clear all 
 volumes and any references from previous runs.
 
-The easiest way to bring up a solution is (example):
+For convenience (it's recommended), ready-to-use `start.sh`, `stop.sh` and 
+`logs.sh` scripts are included in the repository root. Simply run them from 
+the repo root and pass the solution name (required) and the mode name (optional).
 ```bash
 # from repo root
-./start.sh <solution>
+./start.sh <solution> <mode>
 
 # stop and remove containers, networks and declared volumes
-./stop.sh <solution>
+./stop.sh
 ```
+
+List of existing solutions available for start/stop/logs (use the solution 
+name from this list in `./start.sh`, `./stop.sh` and `./logs.sh`):
+- pony
+- sqlalchemy
+
+List of modes for solutions (use the mode name from this list in `./start.sh`, 
+default is sync):
+- sync
+- async
 
 **IMPORTANT NOTE:** In the Docker Compose setup we use a special healthcheck 
 for the database container. It is included in the same image as the database 
@@ -45,27 +57,9 @@ From the repository root, after starting a solution (e.g. `./start.sh pony`),
 view live output with the helper script:
 
 ```bash
-# follow live runner logs for solution
-./logs.sh <solution>
+# follow live runner logs
+./logs.sh
 ```
-
-You can also run the equivalent directly:
-```bash
-# with modern docker
-docker compose -f <path_to_compose>/docker-compose.yaml logs -f runner
-
-# or with older docker-compose
-docker-compose -f <path_to_compose>/docker-compose.yaml logs -f runner
-```
-
-List of existing solutions available for start/stop/logs (use the solution 
-name from this list in `./start.sh`, `./stop.sh` and `./logs.sh`):
-- pony
-- sqlalchemy
-
-For convenience, ready-to-use start.sh, stop.sh and logs.sh scripts are 
-included in the repository root. Simply run them from the repo root and pass 
-the solution name.
 
 ---
 
@@ -77,7 +71,7 @@ the solution name.
 4. Filter: Large (large result set)
 ---
 
-Stack: Python 3.12, PostgreSQL.\
-ORMs included: Pony ORM, Django ORM, SQLAlchemy, Tortoise ORM — plus raw SQL baseline.\
-Authors: student research team.\
-License: MIT.
+- Stack: Python 3.12, PostgreSQL.
+- ORMs included: Pony, Django, SQLAlchemy, Tortoise.
+- Authors: student research team.
+- License: MIT.

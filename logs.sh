@@ -10,30 +10,12 @@ else
   exit 1
 fi
 
-declare -A MAP=(
-  ["pony"]="benchmarks/pony_bench/docker-compose.yaml"
-  ["sqlalchemy"]="benchmarks/sqlalchemy_bench/docker-compose.yaml"
-)
-
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <solution>"
-  echo "Available: ${!MAP[@]}"
-  exit 1
-fi
-
-NAME="$1"
-COMPOSE_FILE="${MAP[$NAME]:-}"
-
-if [ -z "$COMPOSE_FILE" ]; then
-  echo "ERROR: unknown solution name: '$NAME'. Available: ${!MAP[@]}" >&2
+if [ -f "docker-compose.yaml" ]; then
+  COMPOSE_FILE="docker-compose.yml"
+else
+  echo "ERROR: compose file not found (looked for docker-compose.yaml) in current dir." >&2
   exit 2
 fi
 
-if [ ! -f "$COMPOSE_FILE" ]; then
-  echo "ERROR: compose file not found: $COMPOSE_FILE" >&2
-  echo "Run from repo root or update MAP in logs.sh" >&2
-  exit 3
-fi
-
-echo "Following logs for '$NAME' (runner service)..."
+echo "Following logs for runner service..."
 "${DC[@]}" -f "$COMPOSE_FILE" logs -f runner

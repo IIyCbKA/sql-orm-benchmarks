@@ -10,32 +10,16 @@ else
   exit 1
 fi
 
-declare -A MAP=(
-  ["pony"]="benchmarks/pony_bench/docker-compose.yaml"
-  ["sqlalchemy"]="benchmarks/sqlalchemy_bench/docker-compose.yaml"
-)
-
-NAME="${1:-}"
-if [ -z "$NAME" ]; then
-  echo "Usage: $0 <solution-name>"
-  echo "Available: ${!MAP[@]}"
-  exit 1
-fi
-
-COMPOSE_FILE="${MAP[$NAME]:-}"
-if [ -z "$COMPOSE_FILE" ]; then
-  echo "ERROR: unknown solution name: '$NAME'. Available: ${!MAP[@]}" >&2
+if [ -f "docker-compose.yaml" ]; then
+  COMPOSE_FILE="docker-compose.yml"
+else
+  echo "ERROR: compose file not found (looked for docker-compose.yaml) in current dir." >&2
   exit 2
 fi
 
-if [ ! -f "$COMPOSE_FILE" ]; then
-  echo "ERROR: compose file not found: $COMPOSE_FILE" >&2
-  exit 3
-fi
-
-echo ">>> Stopping and removing '${NAME}' using compose file: $COMPOSE_FILE"
+echo ">>> Stopping and removing"
 echo ">>> Command: ${DC[*]} -f $COMPOSE_FILE down -v --remove-orphans"
 
 "${DC[@]}" -f "$COMPOSE_FILE" down -v --remove-orphans
 
-echo ">>> Done: containers, networks and declared volumes removed for '$NAME'."
+echo ">>> Done: containers, networks and declared volumes removed."
