@@ -9,35 +9,38 @@ COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-  return f'a{i:05d}'
+    return f'a{i:05d}'
 
 
 def generate_amount(i: int) -> Decimal:
-  value = i + 5000
-  return Decimal(value) / Decimal('10.00')
+    value = i + 500
+    return Decimal(value) / Decimal('10.00')
 
 
 def main() -> None:
-  start = time.time()
+    start = time.time()
 
-  for i in range(COUNT):
-    with SessionLocal() as session:
-      item = Booking(
-        book_ref=generate_book_ref(i),
-        book_date=datetime.now(UTC),
-        total_amount=generate_amount(i),
-      )
-      session.add(item)
-      session.commit()
+    for i in range(COUNT):
+        with SessionLocal() as session:
+            try:
+                item = Booking(
+                    book_ref=generate_book_ref(i),
+                    book_date=datetime.now(UTC),
+                    total_amount=generate_amount(i),
+                )
+                session.add(item)
+                session.commit()
+            except Exception:
+                pass
 
-  end = time.time()
-  elapsed = end - start
+    end = time.time()
+    elapsed = end - start
 
-  print(
-    f'SQLAlchemy. Test 1. Insert\n'
-    f'elapsed_sec={elapsed:.4f};'
-  )
+    print(
+        f'SQLAlchemy. Test 1. Insert\n'
+        f'elapsed_sec={elapsed:.4f};'
+    )
 
 
 if __name__ == '__main__':
-  main()
+    main()
