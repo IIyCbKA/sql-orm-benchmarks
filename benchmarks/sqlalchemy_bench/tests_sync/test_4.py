@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, UTC
 from decimal import Decimal
 from tests_sync.db import SessionLocal
 from sqlalchemy import select, func
-from models import Booking
+from core.models import Booking
 import time
 
 

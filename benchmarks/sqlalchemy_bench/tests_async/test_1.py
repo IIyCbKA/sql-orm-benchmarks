@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 from decimal import Decimal
 from tests_async.db import AsyncSessionLocal
-from models import Booking
+from core.models import Booking
 import os
 import time
 import asyncio

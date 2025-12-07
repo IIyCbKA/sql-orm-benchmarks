@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from sqlalchemy import select, func
 from tests_async.db import AsyncSessionLocal
-from models import Booking
+from core.models import Booking
 
 
 async def main() -> None:
