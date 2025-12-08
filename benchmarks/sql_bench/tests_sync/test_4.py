@@ -19,7 +19,7 @@ def main() -> None:
                 cur.execute(
                     """
                     SELECT COUNT(*)
-                    FROM booking
+                    FROM bookings.bookings
                     WHERE total_amount BETWEEN %s AND %s
                       AND book_date >= %s
                     """,

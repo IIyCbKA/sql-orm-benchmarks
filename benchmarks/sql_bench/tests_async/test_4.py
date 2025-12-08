@@ -19,7 +19,7 @@ async def main() -> None:
         result = await conn.fetchval(
             """
             SELECT COUNT(*)
-            FROM booking
+            FROM bookings.bookings
             WHERE total_amount BETWEEN $1 AND $2
               AND book_date >= $3
             """,

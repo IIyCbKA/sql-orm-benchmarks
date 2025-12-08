@@ -33,7 +33,7 @@ def main() -> None:
             with conn.cursor() as cur:
                 cur.executemany(
                     """
-                    INSERT INTO booking (book_ref, book_date, total_amount)
+                    INSERT INTO bookings.bookings (book_ref, book_date, total_amount)
                     VALUES (%s, %s, %s)
                     """,
                     rows,

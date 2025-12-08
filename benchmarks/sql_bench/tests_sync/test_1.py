@@ -24,7 +24,8 @@ def main() -> None:
                 with conn.cursor() as cur:
                     cur.execute(
                         """
-                        INSERT INTO booking (book_ref, book_date, total_amount)
+                        EXPLAIN (ANALYZE, BUFFERS)
+                        INSERT INTO bookings.bookings (book_ref, book_date, total_amount)
                         VALUES (%s, %s, %s)
                         """,
                         (
@@ -33,6 +34,8 @@ def main() -> None:
                             generate_amount(i),
                         ),
                     )
+                    plan = cur.fetchall()
+                    print("\n".join([row for row in plan]))
                 conn.commit()
         except Exception:
             pass

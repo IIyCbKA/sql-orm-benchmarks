@@ -26,7 +26,7 @@ async def main() -> None:
 
             await conn.execute(
                 """
-                INSERT INTO booking (book_ref, book_date, total_amount)
+                INSERT INTO bookings.bookings (book_ref, book_date, total_amount)
                 VALUES ($1, $2, $3)
                 """,
                 generate_book_ref(i),
