@@ -1,23 +1,22 @@
 import asyncio
+import time
 from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
-import os
-import time
-
-from sqlalchemy import insert
+from sqlalchemy import select
 from tests_async.db import AsyncSessionLocal
 from core.models import Booking
+import os
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-    return f'c{i:05d}'
+    return f'a{i:05d}'
 
 
-def generate_amount(i: int) -> Decimal:
-    return Decimal(i + 500) / Decimal('10.00')
+def get_new_amount(i: int) -> Decimal:
+    return Decimal(i + 100) / Decimal('10.00')
 
 
 @lru_cache(1)
@@ -28,22 +27,16 @@ def get_curr_date():
 async def main() -> None:
     start = time.time()
 
-    curr_date = get_curr_date()
-    rows = [
-        {
-            "book_ref": generate_book_ref(i),
-            "book_date": curr_date,
-            "total_amount": generate_amount(i),
-        }
-        for i in range(COUNT)
-    ]
-
     try:
         async with AsyncSessionLocal() as session:
-            await session.execute(
-                insert(Booking),
-                rows,
-            )
+            stmt = select(Booking).where(Booking.book_ref.in_([generate_book_ref(i) for i in range(COUNT)]))
+            result = await session.scalars(stmt)
+            bookings = result.all()
+
+            for i, booking in enumerate(bookings):
+                booking.total_amount = get_new_amount(i)
+                booking.book_date = get_curr_date()
+
             await session.commit()
     except Exception:
         pass
@@ -51,7 +44,7 @@ async def main() -> None:
     elapsed = time.time() - start
 
     print(
-        f'SQLAlchemy Async. Test 3. Bulk create. {COUNT} entities\n'
+        f'SQLAlchemy Async. Test 12. Single update. {COUNT} entries\n'
         f'elapsed_sec={elapsed:.4f};'
     )
 

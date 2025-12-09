@@ -1,8 +1,9 @@
 import asyncio
-import os
-import time
 from datetime import datetime, UTC
 from decimal import Decimal
+from functools import lru_cache
+import os
+import time
 
 from tests_async.db import AsyncSessionLocal
 from core.models import Booking
@@ -18,30 +19,35 @@ def generate_amount(i: int) -> Decimal:
     return Decimal(i + 500) / Decimal('10.00')
 
 
+@lru_cache(1)
+def get_curr_date():
+    return datetime.now(UTC)
+
+
 async def main() -> None:
     start = time.time()
 
     try:
         async with AsyncSessionLocal() as session:
-            async with session.begin():
-                for i in range(COUNT):
-                    item = Booking(
-                        book_ref=generate_book_ref(i),
-                        book_date=datetime.now(UTC),
-                        total_amount=generate_amount(i),
-                    )
-                    session.add(item)
+            for i in range(COUNT):
+                item = Booking(
+                    book_ref=generate_book_ref(i),
+                    book_date=get_curr_date(),
+                    total_amount=generate_amount(i),
+                )
+                session.add(item)
 
+            await session.commit()
     except Exception:
         pass
 
     elapsed = time.time() - start
 
     print(
-        f'SQLAlchemy Async. Test 2. Transaction insert\n'
+        f'SQLAlchemy Async. Test 2. Batch create. {COUNT} entities\n'
         f'elapsed_sec={elapsed:.4f};'
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
