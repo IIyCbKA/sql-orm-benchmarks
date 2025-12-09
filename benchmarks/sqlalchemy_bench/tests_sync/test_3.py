@@ -1,9 +1,12 @@
 from datetime import datetime, UTC
 from decimal import Decimal
-from tests_sync.db import SessionLocal
-from core.models import Booking
+from functools import lru_cache
 import os
 import time
+
+from sqlalchemy import insert
+from tests_sync.db import SessionLocal
+from core.models import Booking
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
@@ -13,33 +16,41 @@ def generate_book_ref(i: int) -> str:
 
 
 def generate_amount(i: int) -> Decimal:
-    value = i + 500
-    return Decimal(value) / Decimal('10.00')
+    return Decimal(i + 500) / Decimal('10.00')
+
+
+@lru_cache(1)
+def get_curr_date():
+    return datetime.now(UTC)
 
 
 def main() -> None:
     start = time.time()
 
-    items = []
+    rows = []
+    curr_date = get_curr_date()
+
     for i in range(COUNT):
-        item = Booking(
-            book_ref=generate_book_ref(i),
-            book_date=datetime.now(UTC),
-            total_amount=generate_amount(i),
-        )
-        items.append(item)
+        rows.append({
+            "book_ref": generate_book_ref(i),
+            "book_date": curr_date,
+            "total_amount": generate_amount(i),
+        })
+
     try:
         with SessionLocal() as session:
-            session.bulk_save_objects(items)
+            session.execute(
+                insert(Booking),
+                rows,
+            )
             session.commit()
     except Exception:
         pass
 
-    end = time.time()
-    elapsed = end - start
+    elapsed = time.time() - start
 
     print(
-        f'SQLAlchemy. Test 3. Bulk insert\n'
+        f'SQLAlchemy. Test 3. Bulk create. {COUNT} entities\n'
         f'elapsed_sec={elapsed:.4f};'
     )
 

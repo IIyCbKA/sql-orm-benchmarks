@@ -11,11 +11,11 @@ COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-    return f'b{i:05d}'
+    return f'a{i:05d}'
 
 
-def generate_amount(i: int) -> Decimal:
-    return Decimal(i + 500) / Decimal('10.00')
+def get_new_amount(i: int) -> Decimal:
+    return Decimal(i + 100) / Decimal('10.00')
 
 
 @lru_cache(1)
@@ -29,13 +29,13 @@ def main() -> None:
     try:
         with SessionLocal() as session:
             for i in range(COUNT):
-                item = Booking(
-                    book_ref=generate_book_ref(i),
-                    book_date=get_curr_date(),
-                    total_amount=generate_amount(i),
-                )
-                session.add(item)
+                booking = session.scalars(
+                    Booking.__table__.select().where(Booking.book_ref == generate_book_ref(i))
+                ).first()
 
+                if booking:
+                    booking.total_amount = get_new_amount(i)
+                    booking.book_date = get_curr_date()
             session.commit()
     except Exception:
         pass
@@ -43,7 +43,7 @@ def main() -> None:
     elapsed = time.time() - start
 
     print(
-        f'SQLAlchemy. Test 2. Batch create. {COUNT} entities\n'
+        f'SQLAlchemy. Test 11. Batch update. {COUNT} entries\n'
         f'elapsed_sec={elapsed:.4f};'
     )
 
