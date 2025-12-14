@@ -15,3 +15,9 @@ python -m test_2
 
 # Test 3 -> Bulk create
 python -m test_3
+
+# Test 4 -> Nested create
+python -m test_4
+
+# Test 5 -> Find all
+python -m test_5
