@@ -12,7 +12,8 @@ def main() -> None:
   with db_session():
     try:
       book = Booking.get(book_ref=generate_book_ref(1))
-      _ = len(book.tickets)
+      if book:
+        _ = list(book.tickets)
     except Exception:
       pass
 

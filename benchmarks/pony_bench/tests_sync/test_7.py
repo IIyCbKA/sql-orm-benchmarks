@@ -8,7 +8,8 @@ def main() -> None:
   with db_session():
     try:
       book = Booking.select().first()
-      _ = len(book.tickets)
+      if book:
+        _ = list(book.tickets)
     except Exception:
       pass
 

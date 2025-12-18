@@ -21,3 +21,18 @@ python -m test_4
 
 # Test 5 -> Find all
 python -m test_5
+
+# Test 6 -> Find first
+python -m test_6
+
+# Test 7 -> Nested find first
+python -m test_7
+
+# Test 8 -> Find unique
+python -m test_8
+
+# Test 9 -> Nested find unique
+python -m test_9
+
+# Test 10 -> Filter, paginate & sort
+python -m test_10

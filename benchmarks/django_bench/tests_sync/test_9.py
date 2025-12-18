@@ -1,0 +1,32 @@
+import time
+
+import django
+django.setup()
+
+from core.models import Booking
+
+def generate_book_ref(i: int) -> str:
+  return f'a{i:05d}'
+
+
+def main() -> None:
+  start = time.time()
+
+  try:
+    book = Booking.objects.get(book_ref=generate_book_ref(1))
+    if book:
+      _ = list(book.tickets.all())
+  except Exception:
+    pass
+
+  end = time.time()
+  elapsed = end - start
+
+  print(
+    f'Django ORM (sync). Test 9. Nested find unique\n'
+    f'elapsed_sec={elapsed:.4f};'
+  )
+
+
+if __name__ == '__main__':
+  main()
