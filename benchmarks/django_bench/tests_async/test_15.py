@@ -14,16 +14,20 @@ def generate_book_ref(i: int) -> str:
   return f'b{i:05d}'
 
 
+async def delete_booking(i: int):
+  try:
+    booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
+    if booking:
+      await booking.adelete()
+  except Exception:
+    pass
+
+
 async def main() -> None:
   start = time.perf_counter_ns()
 
-  for i in range(COUNT):
-    try:
-      booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
-      if booking:
-        await booking.adelete()
-    except Exception:
-      pass
+  tasks = [delete_booking(i) for i in range(COUNT)]
+  await asyncio.gather(*tasks)
 
   end = time.perf_counter_ns()
   elapsed = end - start

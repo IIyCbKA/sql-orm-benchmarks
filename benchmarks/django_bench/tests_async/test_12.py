@@ -27,18 +27,22 @@ def get_curr_date():
   return timezone.now()
 
 
+async def update_booking(i: int):
+  try:
+    booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
+    if booking:
+      booking.total_amount = get_new_amount(i)
+      booking.book_date = get_curr_date()
+      await booking.asave(update_fields=['total_amount', 'book_date'])
+  except Exception:
+    pass
+
+
 async def main() -> None:
   start = time.perf_counter_ns()
 
-  for i in range(COUNT):
-    try:
-      booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
-      if booking:
-        booking.total_amount = get_new_amount(i)
-        booking.book_date = get_curr_date()
-        await booking.asave(update_fields=['total_amount', 'book_date'])
-    except Exception:
-      pass
+  tasks = [update_booking(i) for i in range(COUNT)]
+  await asyncio.gather(*tasks)
 
   end = time.perf_counter_ns()
   elapsed = end - start

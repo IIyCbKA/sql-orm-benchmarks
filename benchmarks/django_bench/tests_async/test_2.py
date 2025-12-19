@@ -1,6 +1,5 @@
 from decimal import Decimal
 from functools import lru_cache
-from asgiref.sync import sync_to_async
 import asyncio
 import os
 import time
@@ -29,21 +28,24 @@ def get_curr_date():
   return timezone.now()
 
 
-def batch_create_sync() -> None:
-  with transaction.atomic():
-    for i in range(COUNT):
-      Booking.objects.create(
-        book_ref=generate_book_ref(i),
-        book_date=get_curr_date(),
-        total_amount=generate_amount(i),
-      )
+async def create_booking(i: int) -> None:
+  try:
+    await Booking.objects.acreate(
+      book_ref=generate_book_ref(i),
+      book_date=get_curr_date(),
+      total_amount=generate_amount(i),
+    )
+  except Exception:
+    pass
 
 
 async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    await sync_to_async(batch_create_sync, thread_sensitive=True)()
+    async with transaction.atomic():
+      tasks = [create_booking(i) for i in range(COUNT)]
+      await asyncio.gather(*tasks)
   except Exception:
     pass
 

@@ -94,7 +94,7 @@ ensure_golden_volume() {
   echo ">>> Waiting for restore log line..."
 
   local ok=0
-  for _ in $(seq 1 600); do
+  for _ in $(seq 1 1200); do
     if docker logs "$init_ctr" 2>&1 | grep -q "Restore finished."; then
       ok=1
       break

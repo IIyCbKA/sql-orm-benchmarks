@@ -35,26 +35,30 @@ def get_curr_date():
   return timezone.now()
 
 
+async def create_nested(i: int):
+  try:
+    booking = await Booking.objects.acreate(
+      book_ref=generate_book_ref(i),
+      book_date=get_curr_date(),
+      total_amount=generate_amount(i),
+    )
+
+    _ = await Ticket.objects.acreate(
+      ticket_no=generate_ticket_no(i),
+      book_ref=booking,
+      passenger_id=generate_passenger_id(i),
+      passenger_name='Test',
+      outbound=True
+    )
+  except Exception:
+    pass
+
+
 async def main() -> None:
   start = time.perf_counter_ns()
 
-  for i in range(COUNT):
-    try:
-      booking = await Booking.objects.acreate(
-        book_ref=generate_book_ref(i),
-        book_date=get_curr_date(),
-        total_amount=generate_amount(i),
-      )
-
-      _ = await Ticket.objects.acreate(
-        ticket_no=generate_ticket_no(i),
-        book_ref=booking,
-        passenger_id=generate_passenger_id(i),
-        passenger_name='Test',
-        outbound=True
-      )
-    except Exception:
-      pass
+  tasks = [create_nested(i) for i in range(COUNT)]
+  await asyncio.gather(*tasks)
 
   end = time.perf_counter_ns()
   elapsed = end - start
