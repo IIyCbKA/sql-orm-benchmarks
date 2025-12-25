@@ -3,15 +3,13 @@ import time
 import django
 django.setup()
 
-from core.models import Booking
+from core.models import Ticket
 
 def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    book = Booking.objects.first()
-    if book:
-      _ = list(book.tickets.all())
+    _ = Ticket.objects.select_related('book_ref').first()
 
   except Exception:
     pass

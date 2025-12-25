@@ -4,15 +4,13 @@ import time
 import django
 django.setup()
 
-from core.models import Booking
+from core.models import Ticket
 
 async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    book = await Booking.objects.afirst()
-    if book:
-      _ = [t async for t in book.tickets.all()]
+    _ = await Ticket.objects.select_related('book_ref').afirst()
   except Exception:
     pass
 

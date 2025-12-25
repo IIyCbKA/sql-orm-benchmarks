@@ -4,19 +4,19 @@ import time
 import django
 django.setup()
 
-from core.models import Booking
+from core.models import Ticket
 
 def generate_book_ref(i: int) -> str:
-  return f'a{i:05d}'
+  return f'd{i:05d}'
 
 
 async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    book = await Booking.objects.filter(book_ref=generate_book_ref(1)).afirst()
-    if book:
-      _ = [t async for t in book.tickets.all()]
+    _ = [t async for t in Ticket.objects.select_related('book_ref').filter(
+      book_ref=generate_book_ref(1))
+    ]
   except Exception:
     pass
 
