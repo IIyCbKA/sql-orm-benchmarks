@@ -1,5 +1,5 @@
-from pony.orm import db_session
-from core.models import Booking
+from pony.orm import db_session, left_join
+from core.models import Ticket
 import time
 
 def main() -> None:
@@ -7,9 +7,7 @@ def main() -> None:
 
   with db_session():
     try:
-      book = Booking.select().first()
-      if book:
-        _ = list(book.tickets)
+      _ = left_join((t, b) for t in Ticket for b in t.book_ref).first()
     except Exception:
       pass
 

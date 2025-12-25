@@ -1,9 +1,9 @@
-from pony.orm import db_session
-from core.models import Booking
+from pony.orm import db_session, left_join
+from core.models import Ticket
 import time
 
 def generate_book_ref(i: int) -> str:
-  return f'a{i:05d}'
+  return f'd{i:05d}'
 
 
 def main() -> None:
@@ -11,9 +11,9 @@ def main() -> None:
 
   with db_session():
     try:
-      book = Booking.get(book_ref=generate_book_ref(1))
-      if book:
-        _ = list(book.tickets)
+      _ = list(left_join(
+        (t, b) for t in Ticket for b in t.book_ref if b.book_ref == generate_book_ref(1)
+      ))
     except Exception:
       pass
 
