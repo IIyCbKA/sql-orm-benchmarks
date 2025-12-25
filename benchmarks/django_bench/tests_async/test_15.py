@@ -14,7 +14,7 @@ def generate_book_ref(i: int) -> str:
   return f'b{i:05d}'
 
 
-async def delete_booking(i: int):
+async def delete_booking(i: int) -> None:
   try:
     booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
     if booking:
