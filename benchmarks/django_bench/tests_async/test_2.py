@@ -7,6 +7,7 @@ import time
 import django
 django.setup()
 
+from asgiref.sync import sync_to_async
 from core.models import Booking
 from django.db import transaction
 from django.utils import timezone
@@ -28,13 +29,16 @@ def get_curr_date():
   return timezone.now()
 
 
-async def create_booking(i: int) -> None:
+@sync_to_async
+def batch_create_sync():
   try:
-    await Booking.objects.acreate(
-      book_ref=generate_book_ref(i),
-      book_date=get_curr_date(),
-      total_amount=generate_amount(i),
-    )
+    with transaction.atomic():
+      for i in range(COUNT):
+        Booking.objects.create(
+          book_ref=generate_book_ref(i),
+          book_date=get_curr_date(),
+          total_amount=generate_amount(i),
+      )
   except Exception:
     pass
 
@@ -43,9 +47,7 @@ async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    async with transaction.atomic():
-      tasks = [create_booking(i) for i in range(COUNT)]
-      await asyncio.gather(*tasks)
+    await batch_create_sync()
   except Exception:
     pass
 

@@ -5,6 +5,7 @@ import time
 import django
 django.setup()
 
+from asgiref.sync import sync_to_async
 from core.models import Booking
 from django.db import transaction
 
@@ -15,11 +16,14 @@ def generate_book_ref(i: int) -> str:
   return f'a{i:05d}'
 
 
-async def delete_booking(i: int):
+@sync_to_async
+def delete_booking_sync():
   try:
-    booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
-    if booking:
-      await booking.adelete()
+    with transaction.atomic():
+      for i in range(COUNT):
+        booking = Booking.objects.filter(book_ref=generate_book_ref(i)).first()
+        if booking:
+          booking.delete()
   except Exception:
     pass
 
@@ -28,9 +32,7 @@ async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    async with transaction.atomic():
-      tasks = [delete_booking(i) for i in range(COUNT)]
-      await asyncio.gather(*tasks)
+    await delete_booking_sync()
   except Exception:
     pass
 

@@ -6,6 +6,7 @@ import time
 import django
 django.setup()
 
+from asgiref.sync import sync_to_async
 from core.models import Booking
 from django.db import transaction
 
@@ -16,15 +17,18 @@ def generate_book_ref(i: int) -> str:
   return f'a{i:05d}'
 
 
-async def update_nested(i: int):
+@sync_to_async
+def update_nested_sync():
   try:
-    booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
-    if booking:
-      booking.total_amount += Decimal('10.00')
-      await booking.asave(update_fields=['total_amount'])
-      async for ticket in booking.tickets.all():
-        ticket.passenger_name = 'Nested update'
-        await ticket.asave(update_fields=['passenger_name'])
+    with transaction.atomic():
+      for i in range(COUNT):
+        booking = Booking.objects.filter(book_ref=generate_book_ref(i)).first()
+        if booking:
+          booking.total_amount += Decimal('10.00')
+          booking.save(update_fields=['total_amount'])
+          for ticket in booking.tickets.all():
+            ticket.passenger_name = 'Nested update'
+            ticket.save(update_fields=['passenger_name'])
   except Exception:
     pass
 
@@ -33,9 +37,7 @@ async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    async with transaction.atomic():
-      tasks = [update_nested(i) for i in range(COUNT)]
-      await asyncio.gather(*tasks)
+    await update_nested_sync()
   except Exception:
     pass
 

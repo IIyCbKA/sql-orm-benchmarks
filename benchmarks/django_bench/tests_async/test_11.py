@@ -7,6 +7,7 @@ import time
 import django
 django.setup()
 
+from asgiref.sync import sync_to_async
 from core.models import Booking
 from django.utils import timezone
 from django.db import transaction
@@ -27,13 +28,17 @@ def get_new_amount(i: int) -> Decimal:
 def get_curr_date():
   return timezone.now()
 
-async def update_booking(i: int):
+
+@sync_to_async
+def update_booking_sync():
   try:
-    booking = await Booking.objects.filter(book_ref=generate_book_ref(i)).afirst()
-    if booking:
-      booking.total_amount = get_new_amount(i)
-      booking.book_date = get_curr_date()
-      await booking.asave(update_fields=['total_amount', 'book_date'])
+    with transaction.atomic():
+      for i in range(COUNT):
+        booking = Booking.objects.filter(book_ref=generate_book_ref(i)).first()
+        if booking:
+          booking.total_amount = get_new_amount(i)
+          booking.book_date = get_curr_date()
+          booking.save(update_fields=['total_amount', 'book_date'])
   except Exception:
     pass
 
@@ -42,9 +47,7 @@ async def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    async with transaction.atomic():
-      tasks = [update_booking(i) for i in range(COUNT)]
-      await asyncio.gather(*tasks)
+    await update_booking_sync()
   except Exception:
     pass
 
