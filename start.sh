@@ -91,8 +91,10 @@ ensure_golden_volume() {
     -v "$POSTGRES_GOLDEN_VOLUME":/var/lib/postgresql/data:rw \
     iiycbka/sql-orm-benchmarks-db:latest >/dev/null
 
-  echo ">>> Waiting for restore log line..."
+  echo ">>> Streaming init-golden logs (will stop after success)..."
+  docker logs -f "$init_ctr" 2>&1 | sed -u 's/^/[init-golden] /' & LOG_TAIL_PID=$!
 
+  echo ">>> Waiting for 'Restore finished.' in logs..."
   local ok=0
   for _ in $(seq 1 1200); do
     if docker logs "$init_ctr" 2>&1 | grep -q "Restore finished."; then
@@ -101,6 +103,10 @@ ensure_golden_volume() {
     fi
     sleep 1
   done
+
+  if [ -n "${LOG_TAIL_PID:-}" ]; then
+    kill "$LOG_TAIL_PID" 2>/dev/null || true
+  fi
 
   if [ "$ok" -ne 1 ]; then
     echo "ERROR: golden init did not confirm restore." >&2
