@@ -7,6 +7,9 @@ export DJANGO_SETTINGS_MODULE="core.settings"
 # Add a root dir for correct imports
 export PYTHONPATH=..
 
+# db warm up
+python -m warmup
+
 # Test 1 -> Single create
 python -m test_1
 
