@@ -4,8 +4,8 @@ COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 def main() -> None:
   print(
-    f"PonyORM. Test 3. Bulk create. {COUNT} entities\n"
-    f"Don't have bulk create;"
+    f'PonyORM. Test 3. Bulk create. {COUNT} entities\n'
+    f'Bulk create is not supported'
   )
 
 

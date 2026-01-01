@@ -3,6 +3,7 @@ from decimal import Decimal
 from pony.orm import db_session
 from core.models import Booking
 import os
+import sys
 import time
 
 LIMIT = int(os.environ.get('LIMIT', '250'))
@@ -23,15 +24,16 @@ def main() -> None:
         and b.total_amount <= amount_high
         and b.book_date >= date_from
       ).order_by(lambda b: b.total_amount)[OFFSET : OFFSET + LIMIT])
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 10 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 10. Filter, paginate & sort\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

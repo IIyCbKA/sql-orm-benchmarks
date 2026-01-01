@@ -4,6 +4,7 @@ from functools import lru_cache
 from pony.orm import db_session, flush
 from core.models import Booking
 import os
+import sys
 import time
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -36,15 +37,16 @@ def main() -> None:
           booking.total_amount = get_new_amount(i)
           booking.book_date = get_curr_date()
           flush()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 11 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 11. Batch update. {COUNT} entries\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

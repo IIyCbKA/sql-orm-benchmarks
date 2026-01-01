@@ -1,5 +1,6 @@
 from pony.orm import db_session
 from core.models import Booking
+import sys
 import time
 
 def main() -> None:
@@ -7,16 +8,17 @@ def main() -> None:
 
   with db_session:
     try:
-        _ = Booking.select().order_by(Booking.book_ref).first()
-    except Exception:
-      pass
+      _ = Booking.select().order_by(Booking.book_ref).first()
+    except Exception as e:
+      print(f'[ERROR] Test 6 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 6. Find first\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

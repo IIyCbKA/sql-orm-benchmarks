@@ -1,6 +1,7 @@
 from pony.orm import db_session, flush
 from core.models import Booking
 import os
+import sys
 import time
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -22,15 +23,16 @@ def main() -> None:
         if booking:
           booking.delete()
           flush()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 14 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 14. Batch delete. {COUNT} entries\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

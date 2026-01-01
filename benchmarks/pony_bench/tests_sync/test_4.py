@@ -4,6 +4,7 @@ from functools import lru_cache
 from pony.orm import db_session, commit, flush
 from core.models import Booking, Ticket
 import os
+import sys
 import time
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -54,15 +55,16 @@ def main() -> None:
         )
 
         commit()
-      except Exception:
-        pass
+      except Exception as e:
+        print(f'[ERROR] Test 4 failed: {e}')
+        sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 4. Nested create. {COUNT} entities\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

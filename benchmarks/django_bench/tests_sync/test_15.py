@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import django
@@ -21,15 +22,16 @@ def main() -> None:
       booking = Booking.objects.filter(book_ref=generate_book_ref(i)).first()
       if booking:
         booking.delete()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 15 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'Django ORM (sync). Test 15. Single delete. {COUNT} entries\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

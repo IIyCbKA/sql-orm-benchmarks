@@ -1,6 +1,7 @@
 from decimal import Decimal
 from functools import lru_cache
 import os
+import sys
 import time
 
 import django
@@ -36,15 +37,16 @@ def main() -> None:
         booking.total_amount = get_new_amount(i)
         booking.book_date = get_curr_date()
         booking.save(update_fields=['total_amount', 'book_date'])
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 12 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'Django ORM (sync). Test 12. Single update. {COUNT} entries\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

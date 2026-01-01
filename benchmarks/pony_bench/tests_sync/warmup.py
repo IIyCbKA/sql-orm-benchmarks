@@ -3,6 +3,7 @@ from decimal import Decimal
 from pony.orm import db_session, commit, flush
 from core.models import Booking, Ticket
 import os
+import sys
 
 COUNT = int(os.environ.get('WARMUP_ITERATIONS', '20'))
 
@@ -40,8 +41,9 @@ def warm_up() -> None:
         flush()
         t.delete()
         commit()
-      except Exception:
-        pass
+      except Exception as e:
+        print(f'[ERROR] Warm-up failed: {e}')
+        sys.exit(1)
 
   print('Warm-up done')
 

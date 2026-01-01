@@ -1,5 +1,6 @@
 from decimal import Decimal
 import os
+import sys
 
 import django
 django.setup()
@@ -42,8 +43,9 @@ def warm_up() -> None:
 
         b.delete()
         t.delete()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Warm-up failed: {e}')
+      sys.exit(1)
 
   print('Warm-up done')
 

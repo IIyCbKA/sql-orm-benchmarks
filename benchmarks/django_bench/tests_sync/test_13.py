@@ -1,5 +1,6 @@
 from decimal import Decimal
 import os
+import sys
 import time
 
 import django
@@ -30,15 +31,16 @@ def main() -> None:
         for ticket in booking.tickets.all():
           ticket.passenger_name = 'Nested update'
           ticket.save(update_fields=['passenger_name'])
-  except Exception:
-    pass
+  except Exception as e:
+    print(f'[ERROR] Test 13 failed: {e}')
+    sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'Django ORM (sync). Test 13. Nested batch update. {COUNT} entries\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

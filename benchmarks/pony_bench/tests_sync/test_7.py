@@ -1,5 +1,6 @@
 from pony.orm import db_session, select
 from core.models import Ticket
+import sys
 import time
 
 def main() -> None:
@@ -18,15 +19,16 @@ def main() -> None:
         b.book_date,
         b.total_amount
       ) for t in Ticket for b in t.book_ref).order_by(1).first()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 7 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 7. Nested find first\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 

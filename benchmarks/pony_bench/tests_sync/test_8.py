@@ -1,5 +1,6 @@
 from pony.orm import db_session
 from core.models import Booking
+import sys
 import time
 
 def generate_book_ref(i: int) -> str:
@@ -14,15 +15,16 @@ def main() -> None:
       _ = Booking.select(
         lambda b: b.book_ref == generate_book_ref(1)
       ).order_by(Booking.book_ref).first()
-    except Exception:
-      pass
+    except Exception as e:
+      print(f'[ERROR] Test 8 failed: {e}')
+      sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
     f'PonyORM. Test 8. Find unique\n'
-    f'elapsed_ns={elapsed:.0f};'
+    f'elapsed_ns={elapsed}'
   )
 
 
