@@ -15,7 +15,7 @@ def main() -> None:
     try:
         with SessionLocal() as session:
             _ = session.scalars(
-                select(Booking).where(Booking.book_ref == generate_book_ref(1)).limit(1)
+                select(Booking).where(Booking.book_ref == generate_book_ref(1)).order_by(Booking.book_ref).limit(1)
             ).first()
     except Exception as e:
         print(e)
@@ -23,7 +23,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 8. Find unique\n'
+        f'SQLAlchemy (sync). Test 8. Find unique\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

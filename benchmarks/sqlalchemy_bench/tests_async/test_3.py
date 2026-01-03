@@ -26,21 +26,18 @@ def get_curr_date():
 
 
 async def bulk_create_async() -> None:
-    try:
-        async with AsyncSessionLocal() as session:
-            async with session.begin():
-                objs = [
-                    Booking(
-                        book_ref=generate_book_ref(i),
-                        book_date=get_curr_date(),
-                        total_amount=generate_amount(i),
-                    )
-                    for i in range(COUNT)
-                ]
-                session.add_all(objs)
-                await session.flush()
-    except Exception:
-        pass
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            objs = [
+                Booking(
+                    book_ref=generate_book_ref(i),
+                    book_date=get_curr_date(),
+                    total_amount=generate_amount(i),
+                )
+                for i in range(COUNT)
+            ]
+            session.add_all(objs)
+            await session.flush()
 
 
 async def main() -> None:
@@ -55,7 +52,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy ORM (async). Test 3. Bulk create. {COUNT} entities\n"
+        f"SQLAlchemy (async). Test 3. Bulk create. {COUNT} entities\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

@@ -25,20 +25,16 @@ def get_curr_date():
 
 
 async def batch_create_async() -> None:
-    try:
-        async with AsyncSessionLocal() as session:
-            async with session.begin():
-                for i in range(COUNT):
-                    booking = Booking(
-                        book_ref=generate_book_ref(i),
-                        book_date=get_curr_date(),
-                        total_amount=generate_amount(i),
-                    )
-                    session.add(booking)
-                await session.flush()
-    except Exception:
-        pass
-
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            for i in range(COUNT):
+                booking = Booking(
+                    book_ref=generate_book_ref(i),
+                    book_date=get_curr_date(),
+                    total_amount=generate_amount(i),
+                )
+                session.add(booking)
+            await session.flush()
 
 async def main() -> None:
     start = time.perf_counter_ns()
@@ -52,7 +48,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy ORM (async). Test 2. Batch create. {COUNT} entities\n"
+        f"SQLAlchemy (async). Test 2. Batch create. {COUNT} entities\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

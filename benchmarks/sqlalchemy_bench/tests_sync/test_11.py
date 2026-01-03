@@ -4,6 +4,7 @@ from functools import lru_cache
 import os
 import time
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 from tests_sync.db import SessionLocal
 from core.models import Booking
 
@@ -27,15 +28,11 @@ def main() -> None:
     start = time.perf_counter_ns()
 
     try:
-        session = SessionLocal()
+        session: Session = SessionLocal()
         with session.begin():
             for i in range(COUNT):
-                booking = session.scalars(
-                    select(Booking)
-                    .where(Booking.book_ref == generate_book_ref(i))
-                    .limit(1)
-                ).first()
-
+                statement = select(Booking).where(Booking.book_ref == generate_book_ref(i)).order_by(Booking.book_ref).limit(1)
+                booking = session.execute(statement).scalars().first()
                 if booking:
                     booking.total_amount = get_new_amount(i)
                     booking.book_date = get_curr_date()
@@ -46,7 +43,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 11. Batch update. {COUNT} entries\n'
+        f'SQLAlchemy (sync). Test 11. Batch update. {COUNT} entries\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

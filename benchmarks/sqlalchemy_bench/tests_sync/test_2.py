@@ -28,7 +28,7 @@ def main() -> None:
 
     try:
         session = SessionLocal()
-        with session.begin() as transaction:
+        with session.begin():
             for i in range(COUNT):
                 item = Booking(
                     book_ref=generate_book_ref(i),
@@ -44,7 +44,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 2. Batch create. {COUNT} entities\n'
+        f'SQLAlchemy (sync). Test 2. Batch create. {COUNT} entities\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

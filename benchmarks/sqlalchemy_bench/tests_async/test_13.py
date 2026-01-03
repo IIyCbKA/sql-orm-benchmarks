@@ -47,7 +47,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy ORM (async). Test 13. Nested batch update. {COUNT} entries\n"
+        f"SQLAlchemy (async). Test 13. Nested batch update. {COUNT} entries\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

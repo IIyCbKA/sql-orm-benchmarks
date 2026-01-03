@@ -45,7 +45,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 3. Bulk create. {COUNT} entities\n'
+        f'SQLAlchemy (sync). Test 3. Bulk create. {COUNT} entities\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

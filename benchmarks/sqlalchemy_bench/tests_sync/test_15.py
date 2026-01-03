@@ -33,7 +33,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 15. Single delete. {COUNT} entries\n'
+        f'SQLAlchemy (sync). Test 15. Single delete. {COUNT} entries\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

@@ -38,7 +38,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 10. Filter, paginate & sort\n'
+        f'SQLAlchemy (sync). Test 10. Filter, paginate & sort\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

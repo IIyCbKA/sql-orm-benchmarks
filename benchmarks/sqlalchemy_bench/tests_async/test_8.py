@@ -23,7 +23,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy ORM (async). Test 8. Find unique\n"
+        f"SQLAlchemy (async). Test 8. Find unique\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

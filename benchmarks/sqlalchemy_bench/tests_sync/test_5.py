@@ -17,7 +17,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 5. Find all\n'
+        f'SQLAlchemy (sync). Test 5. Find all\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

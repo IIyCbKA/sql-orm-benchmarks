@@ -31,7 +31,7 @@ def main() -> None:
         with SessionLocal() as session:
             for i in range(COUNT):
                 booking = session.scalars(
-                    select(Booking).where(Booking.book_ref == generate_book_ref(i))
+                    select(Booking).where(Booking.book_ref == generate_book_ref(i)).order_by(Booking.book_ref).limit(1)
                 ).first()
 
                 if booking:
@@ -44,7 +44,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 12. Single update. {COUNT} entries\n'
+        f'SQLAlchemy (sync). Test 12. Single update. {COUNT} entries\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

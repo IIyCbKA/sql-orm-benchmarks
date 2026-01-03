@@ -34,9 +34,8 @@ def get_curr_date():
 def main() -> None:
     start = time.perf_counter_ns()
     session = SessionLocal()
-    for i in range(COUNT):
-        try:
-
+    try:
+        for i in range(COUNT):
             with session.begin():
                 booking = Booking(
                     book_ref=generate_book_ref(i),
@@ -56,13 +55,13 @@ def main() -> None:
                 session.add(ticket)
                 session.flush()
 
-        except Exception as e:
-            print(e)
+    except Exception as e:
+        print(e)
 
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 4. Nested create. {COUNT} entities\n'
+        f'SQLAlchemy (sync). Test 4. Nested create. {COUNT} entities\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

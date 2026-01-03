@@ -10,8 +10,22 @@ def main() -> None:
 
     try:
         with SessionLocal() as session:
-            stmt = select(Ticket).limit(1)
-            ticket = session.scalar(stmt)
+            stmt = (
+                select(
+                    Ticket.ticket_no,
+                    Ticket.book_ref,
+                    Ticket.passenger_id,
+                    Ticket.passenger_name,
+                    Ticket.outbound,
+                    Booking.book_ref,
+                    Booking.book_date,
+                    Booking.total_amount,
+                )
+                .join(Booking, Ticket.book_ref == Booking.book_ref)
+                .order_by(Ticket.ticket_no)
+                .limit(1)
+            )
+            ticket = session.execute(stmt).first()
 
             if ticket:
                 book_ref_value = ticket.book_ref
@@ -22,7 +36,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 7. Nested find first\n'
+        f'SQLAlchemy (sync). Test 7. Nested find first\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

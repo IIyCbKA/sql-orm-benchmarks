@@ -35,27 +35,24 @@ def get_curr_date():
 async def create_nested_async():
     async with AsyncSessionLocal() as session:
         for i in range(COUNT):
-            try:
-                async with session.begin():
-                    booking = Booking(
-                        book_ref=generate_book_ref(i),
-                        book_date=get_curr_date(),
-                        total_amount=generate_amount(i),
-                    )
-                    session.add(booking)
-                    await session.flush()
+            async with session.begin():
+                booking = Booking(
+                    book_ref=generate_book_ref(i),
+                    book_date=get_curr_date(),
+                    total_amount=generate_amount(i),
+                )
+                session.add(booking)
+                await session.flush()
 
-                    ticket = Ticket(
-                        ticket_no=generate_ticket_no(i),
-                        book_ref=booking.book_ref,
-                        passenger_id=generate_passenger_id(i),
-                        passenger_name="Test",
-                        outbound=True,
-                    )
-                    session.add(ticket)
-                    await session.flush()
-            except Exception as e:
-                print(e)
+                ticket = Ticket(
+                    ticket_no=generate_ticket_no(i),
+                    book_ref=booking.book_ref,
+                    passenger_id=generate_passenger_id(i),
+                    passenger_name="Test",
+                    outbound=True,
+                )
+                session.add(ticket)
+                await session.flush()
 
 
 
@@ -71,7 +68,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy ORM (async). Test 4. Nested create. {COUNT} entities\n"
+        f"SQLAlchemy (async). Test 4. Nested create. {COUNT} entities\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

@@ -14,7 +14,20 @@ def main() -> None:
 
     try:
         with SessionLocal() as session:
-            stmt = select(Ticket).where(Ticket.book_ref == generate_book_ref(1))
+            stmt = (
+                select(
+                    Ticket.ticket_no,
+                    Ticket.book_ref,
+                    Ticket.passenger_id,
+                    Ticket.passenger_name,
+                    Ticket.outbound,
+                    Booking.book_ref,
+                    Booking.book_date,
+                    Booking.total_amount,
+                )
+                .join(Booking, Ticket.book_ref == Booking.book_ref)
+                .where(Ticket.book_ref == generate_book_ref(1))
+            )
             result = session.scalars(stmt)
             tickets = [t for t in result]
     except Exception as e:
@@ -23,7 +36,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy. Test 9. Nested find unique\n'
+        f'SQLAlchemy (sync). Test 9. Nested find unique\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 
