@@ -1,22 +1,24 @@
 import time
+import sys
 from tests_sync.db import get_connection
 
 def main() -> None:
-    start = time.time()
-
+    start = time.perf_counter_ns()
+    connection = get_connection()
     try:
-        with get_connection() as conn:
+        with connection as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM bookings.bookings")
+                cur.execute("""SELECT bookings.book_ref, bookings.book_date, bookings.total_amount FROM bookings""")
                 all_bookings = cur.fetchall()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f'[ERROR] Test 5 failed: {e}')
+        sys.exit(1)
 
-    elapsed = time.time() - start
+    elapsed = time.perf_counter_ns() - start
 
     print(
         f'Pure SQL (psycopg3). Test 5. Find all\n'
-        f'elapsed_sec={elapsed:.4f};'
+        f'elapsed_ns={elapsed};'
     )
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, UTC
 from decimal import Decimal
 import os
 import time
+import sys
 from tests_sync.db import get_connection
 
 LIMIT = int(os.environ.get('LIMIT', '250'))
@@ -12,7 +13,7 @@ def main() -> None:
     date_from = now - timedelta(days=30)
     amount_low = Decimal('50.00')
     amount_high = Decimal('500.00')
-    start = time.time()
+    start = time.perf_counter_ns()
 
     try:
         with get_connection() as conn:
@@ -29,15 +30,15 @@ def main() -> None:
                     (amount_low, amount_high, date_from, LIMIT, OFFSET)
                 )
                 rows = cur.fetchall()
-    except Exception:
-        rows = []
+    except Exception as e:
+        print(f'[ERROR] Test 10 failed: {e}')
+        sys.exit(1)
 
-    elapsed = time.time() - start
+    elapsed = time.perf_counter_ns() - start
 
     print(
         f'Pure SQL (psycopg3). Test 10. Filter, paginate & sort\n'
-        f'rows_fetched={len(rows)}; '
-        f'elapsed_sec={elapsed:.4f};'
+        f'elapsed_ns={elapsed};'
     )
 
 if __name__ == "__main__":

@@ -1,29 +1,35 @@
 import time
+import sys
 from tests_sync.db import get_connection
 
 
 def main() -> None:
-    start = time.time()
+    start = time.perf_counter_ns()
 
     try:
         with get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT id FROM bookings.bookings ORDER BY book_ref LIMIT 1")
-                first_booking = cur.fetchone()
+                cur.execute("""SELECT 
+                tickets.ticket_no, 
+                tickets.book_ref, 
+                tickets.passenger_id, 
+                tickets.passenger_name, 
+                tickets.outbound, 
+                bookings.book_ref, 
+                bookings.book_date, 
+                bookings.total_amount 
+                FROM tickets 
+                INNER JOIN bookings ON (tickets.book_ref = bookings.book_ref) 
+                ORDER BY tickets.ticket_no ASC LIMIT 1""")
+    except Exception as e:
+        print(f'[ERROR] Test 7 failed: {e}')
+        sys.exit(1)
 
-                ticket_count = 0
-                if first_booking:
-                    booking_id = first_booking[0]
-                    cur.execute("SELECT COUNT(*) FROM bookings.tickets WHERE book_ref_id = %s", (booking_id,))
-                    ticket_count = cur.fetchone()[0]
-    except Exception:
-        pass
-
-    elapsed = time.time() - start
+    elapsed = time.perf_counter_ns() - start
 
     print(
         f'Pure SQL (psycopg3). Test 7. Nested find first\n'
-        f'elapsed_sec={elapsed:.4f};'
+        f'elapsed_ns={elapsed};'
     )
 
 

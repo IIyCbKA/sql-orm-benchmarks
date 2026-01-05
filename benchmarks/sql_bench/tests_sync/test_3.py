@@ -2,7 +2,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 import os
 import time
-
+import sys
 from tests_sync.db import get_connection
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -17,7 +17,7 @@ def generate_amount(i: int) -> Decimal:
 
 
 def main() -> None:
-    start = time.time()
+    start = time.perf_counter_ns()
 
     curr_date = datetime.now(UTC)
 
@@ -25,9 +25,9 @@ def main() -> None:
         (generate_book_ref(i), curr_date, generate_amount(i))
         for i in range(COUNT)
     ]
-
+    connection = get_connection()
     try:
-        with get_connection() as conn:
+        with connection as conn:
             with conn.cursor() as cur:
                 cur.executemany(
                     """
@@ -37,14 +37,15 @@ def main() -> None:
                     rows,
                 )
             conn.commit()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f'[ERROR] Test 3 failed: {e}')
+        sys.exit(1)
 
-    elapsed = time.time() - start
+    elapsed = time.perf_counter_ns() - start
 
     print(
         f'Pure SQL (psycopg3). Test 3. Bulk create. {COUNT} entities\n'
-        f'elapsed_sec={elapsed:.4f};'
+        f'elapsed_ns={elapsed};'
     )
 
 

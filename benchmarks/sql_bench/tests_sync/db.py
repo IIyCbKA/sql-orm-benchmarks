@@ -18,3 +18,4 @@ def get_connection() -> psycopg.Connection:
         user=DB_USER,
         password=DB_PASS,
     )
+

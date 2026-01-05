@@ -2,7 +2,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 import os
 import time
-
+import sys
 from tests_sync.db import get_connection
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -25,19 +25,18 @@ def generate_amount(i: int) -> Decimal:
 
 
 def main() -> None:
-    start = time.time()
+    start = time.perf_counter_ns()
     curr_date = datetime.now(UTC)
-
+    connection = get_connection()
     try:
-        with get_connection() as conn:
+        with connection as conn:
             with conn.cursor() as cur:
                 for i in range(COUNT):
-                    # Вставка booking
                     cur.execute(
                         """
                         INSERT INTO bookings.bookings (book_ref, book_date, total_amount)
                         VALUES (%s, %s, %s)
-                        RETURNING id
+                        RETURNING book_ref
                         """,
                         (generate_book_ref(i), curr_date, generate_amount(i))
                     )
@@ -46,7 +45,7 @@ def main() -> None:
                     cur.execute(
                         """
                         INSERT INTO bookings.tickets 
-                        (ticket_no, book_ref_id, passenger_id, passenger_name, outbound)
+                        (ticket_no, book_ref, passenger_id, passenger_name, outbound)
                         VALUES (%s, %s, %s, %s, %s)
                         """,
                         (
@@ -57,14 +56,15 @@ def main() -> None:
                             True,
                         )
                     )
-                conn.commit()
-    except Exception:
-        pass
+                    conn.commit()
+    except Exception as e:
+        print(f'[ERROR] Test 4 failed: {e}')
+        sys.exit(1)
 
-    elapsed = time.time() - start
+    elapsed = time.perf_counter_ns() - start
     print(
         f'Pure SQL (psycopg3). Test 4. Nested create. {COUNT} entities\n'
-        f'elapsed_sec={elapsed:.4f};'
+        f'elapsed_ns={elapsed};'
     )
 
 
