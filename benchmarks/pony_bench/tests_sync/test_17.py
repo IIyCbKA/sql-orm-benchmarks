@@ -11,14 +11,14 @@ def generate_book_ref(i: int) -> str:
   return f'd{i:05d}'
 
 
+@db_session
 def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    with db_session:
-      bookings = list(
-        select(b for b in Booking if b.book_ref in refs)
-        .prefetch(Booking.tickets)
-      )
+    bookings = list(
+      select(b for b in Booking if b.book_ref in refs)
+      .prefetch(Booking.tickets)
+    )
   except Exception as e:
     print(f'[ERROR] Test 17 failed (data preparation): {e}')
     sys.exit(1)
@@ -26,12 +26,11 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    with db_session:
-      for booking in bookings:
-        for ticket in booking.tickets:
-          ticket.delete()
-        booking.delete()
-        commit()
+    for booking in bookings:
+      for ticket in booking.tickets:
+        ticket.delete()
+      booking.delete()
+      commit()
   except Exception as e:
     print(f'[ERROR] Test 17 failed (delete phase): {e}')
     sys.exit(1)

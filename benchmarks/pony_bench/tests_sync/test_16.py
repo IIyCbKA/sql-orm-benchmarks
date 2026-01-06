@@ -1,4 +1,4 @@
-from pony.orm import db_session, select
+from pony.orm import db_session, select, commit
 from core.models import Booking
 import os
 import sys
@@ -10,6 +10,7 @@ def generate_book_ref(i: int) -> str:
   return f'c{i:05d}'
 
 
+@db_session
 def main() -> None:
   """
   Pony ORM does not support true bulk delete.
@@ -22,16 +23,15 @@ def main() -> None:
 
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    with db_session:
-      bookings = list(select(b for b in Booking if b.book_ref in refs))
+    bookings = list(select(b for b in Booking if b.book_ref in refs))
   except Exception as e:
     print(f'[ERROR] Dataset preparation failed (instead of bulk delete): {e}')
     sys.exit(1)
 
   try:
-    with db_session:
-      for booking in bookings:
-        booking.delete()
+    for booking in bookings:
+      booking.delete()
+    commit()
   except Exception as e:
     print(f'[ERROR] Dataset delete failed (instead of bulk delete): {e}')
     sys.exit(1)

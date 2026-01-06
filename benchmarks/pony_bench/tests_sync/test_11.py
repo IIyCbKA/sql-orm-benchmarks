@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
-from pony.orm import db_session, select, flush
+from pony.orm import db_session, select, flush, commit
 from core.models import Booking
 import os
 import sys
@@ -23,11 +23,11 @@ def get_curr_date():
   return datetime.now(UTC)
 
 
+@db_session
 def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    with db_session:
-      bookings = list(select(b for b in Booking if b.book_ref in refs))
+    bookings = list(select(b for b in Booking if b.book_ref in refs))
   except Exception as e:
     print(f'[ERROR] Test 11 failed (data preparation): {e}')
     sys.exit(1)
@@ -35,11 +35,11 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    with db_session:
-      for booking in bookings:
-        booking.total_amount = get_new_amount(booking.total_amount)
-        booking.book_date = get_curr_date()
-        flush()
+    for booking in bookings:
+      booking.total_amount = get_new_amount(booking.total_amount)
+      booking.book_date = get_curr_date()
+      flush()
+    commit()
   except Exception as e:
     print(f'[ERROR] Test 11 failed (update phase): {e}')
     sys.exit(1)
