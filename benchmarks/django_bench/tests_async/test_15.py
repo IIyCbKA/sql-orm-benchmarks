@@ -6,6 +6,7 @@ import time
 import django
 django.setup()
 
+from asgiref.sync import sync_to_async
 from core.models import Booking
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -19,10 +20,15 @@ async def delete_booking(booking: Booking) -> None:
   await booking.adelete()
 
 
+@sync_to_async
+def fetch_bookings() -> list[Booking]:
+  refs = [generate_book_ref(i) for i in range(COUNT)]
+  return list(Booking.objects.filter(book_ref__in=refs))
+
+
 async def main() -> None:
   try:
-    refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = await Booking.objects.filter(book_ref__in=refs).alist()
+    bookings = await fetch_bookings()
   except Exception as e:
     print(f'[ERROR] Test 15 failed (data preparation): {e}')
     sys.exit(1)

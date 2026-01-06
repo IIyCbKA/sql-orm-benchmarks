@@ -29,15 +29,19 @@ def update_nested_sync(bookings: list[Booking]) -> None:
         ticket.save(update_fields=['passenger_name'])
 
 
+@sync_to_async
+def fetch_bookings() -> list[Booking]:
+  refs = [generate_book_ref(i) for i in range(COUNT)]
+  return list(
+    Booking.objects
+    .filter(book_ref__in=refs)
+    .prefetch_related('tickets')
+  )
+
+
 async def main() -> None:
   try:
-    refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = await (
-      Booking.objects
-      .filter(book_ref__in=refs)
-      .prefetch_related('tickets')
-      .alist()
-    )
+    bookings = await fetch_bookings()
   except Exception as e:
     print(f'[ERROR] Test 13 failed (data preparation): {e}')
     sys.exit(1)
