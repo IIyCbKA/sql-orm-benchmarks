@@ -36,7 +36,7 @@ async def update_booking(booking: Booking) -> None:
 async def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = list(Booking.objects.filter(book_ref__in=refs))
+    bookings = await Booking.objects.filter(book_ref__in=refs).alist()
   except Exception as e:
     print(f'[ERROR] Test 12 failed (data preparation): {e}')
     sys.exit(1)

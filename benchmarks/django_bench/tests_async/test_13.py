@@ -32,10 +32,11 @@ def update_nested_sync(bookings: list[Booking]) -> None:
 async def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = list(
+    bookings = await (
       Booking.objects
       .filter(book_ref__in=refs)
       .prefetch_related('tickets')
+      .alist()
     )
   except Exception as e:
     print(f'[ERROR] Test 13 failed (data preparation): {e}')
