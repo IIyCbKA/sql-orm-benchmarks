@@ -39,7 +39,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy (sync). Test 9. Nested find unique\n'
+        f'SQLAlchemy (sync). Test 9. Nested find\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 

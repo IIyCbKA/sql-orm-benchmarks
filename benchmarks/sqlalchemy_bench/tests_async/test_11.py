@@ -52,7 +52,7 @@ async def main() -> None:
     elapsed = end - start
 
     print(
-        f"SQLAlchemy (async). Test 11. Batch update. {COUNT} entries\n"
+        f"SQLAlchemy (async). Test 11. Transaction update. {COUNT} entries\n"
         f"elapsed_ns={elapsed:.0f};"
     )
 

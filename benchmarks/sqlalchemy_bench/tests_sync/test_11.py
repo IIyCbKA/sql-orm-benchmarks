@@ -45,7 +45,7 @@ def main() -> None:
     elapsed = time.perf_counter_ns() - start
 
     print(
-        f'SQLAlchemy (sync). Test 11. Batch update. {COUNT} entries\n'
+        f'SQLAlchemy (sync). Test 11. Transaction update. {COUNT} entries\n'
         f'elapsed_ns={elapsed:.0f};'
     )
 
