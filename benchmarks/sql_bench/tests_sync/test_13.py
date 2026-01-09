@@ -46,7 +46,7 @@ def main() -> None:
                             UPDATE bookings.bookings
                             SET total_amount = %s
                             WHERE book_ref = %s
-                        """, total_amount + Decimal('10.00'), ref)
+                        """, (total_amount + Decimal('10.00'), ref))
 
                         for ticket_no in tickets:
                             cur.execute("""
