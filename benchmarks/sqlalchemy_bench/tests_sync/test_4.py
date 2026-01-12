@@ -39,7 +39,7 @@ def main() -> None:
         for i in range(COUNT):
             book_ref = generate_book_ref(i)
             with session.begin():
-                session.add(booking = Booking(
+                session.add(Booking(
                     book_ref=book_ref,
                     book_date=get_curr_date(),
                     total_amount=generate_amount(i),
