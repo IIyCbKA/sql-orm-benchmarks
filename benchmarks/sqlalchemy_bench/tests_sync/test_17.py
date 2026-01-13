@@ -21,7 +21,7 @@ def main() -> None:
                          .options(selectinload(Booking.tickets))
                          .where(Booking.book_ref.in_(refs)))
             bookings = session.execute(statement).scalars().all()
-            session.rollback()
+            session.commit()
         except Exception as e:
             print(f'[ERROR] Test 17 failed (data preparation): {e}')
             sys.exit(1)

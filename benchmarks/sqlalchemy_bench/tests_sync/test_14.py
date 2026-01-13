@@ -20,7 +20,7 @@ def main() -> None:
             refs = [generate_book_ref(i) for i in range(COUNT)]
             statement = select(Booking).where(Booking.book_ref.in_(refs))
             bookings = session.execute(statement).scalars().all()
-            session.rollback()
+            session.commit()
         except Exception as e:
             print(f'[ERROR] Test 14 failed (data preparation): {e}')
             sys.exit(1)
