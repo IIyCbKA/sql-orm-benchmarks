@@ -41,9 +41,8 @@ def main() -> None:
         try:
             with session.begin():
                 for booking in bookings:
-                    if booking:
-                        booking.total_amount = get_new_amount(booking.total_amount)
-                        booking.book_date = get_curr_date()
+                    booking.total_amount = get_new_amount(booking.total_amount)
+                    booking.book_date = get_curr_date()
         except Exception as e:
             print(f'[ERROR] Test 11 failed (update phase): {e}')
             sys.exit(1)
