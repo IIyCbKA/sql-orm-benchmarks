@@ -1,6 +1,6 @@
 from decimal import Decimal
-from pony.orm import db_session, select, commit, update
-from core.models import Booking, Ticket
+from pony.orm import db_session, select, commit
+from core.models import Booking
 import os
 import statistics
 import sys
