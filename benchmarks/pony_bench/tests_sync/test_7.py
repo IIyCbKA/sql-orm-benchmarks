@@ -5,24 +5,27 @@ import statistics
 import sys
 import time
 
+LIMIT = int(os.environ.get('LIMIT', '250'))
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
 def select_iteration() -> int:
+  """
+  order_by(1) equal order_by(ticket_no) in primitive notation
+  """
   start = time.perf_counter_ns()
 
   with db_session:
-    # order by first row - t.ticket_no
-    _ = select((
-      t.ticket_no,
-      t.book_ref,
-      t.passenger_id,
-      t.passenger_name,
-      t.outbound,
-      b.book_ref,
-      b.book_date,
-      b.total_amount
-    ) for t in Ticket for b in t.book_ref).order_by(1).first()
+    _ = list(select((
+        t.ticket_no,
+        t.book_ref,
+        t.passenger_id,
+        t.passenger_name,
+        t.outbound,
+        t.booking.book_ref,
+        t.booking.book_date,
+        t.booking.total_amount
+    ) for t in Ticket).order_by(1)[:LIMIT])
 
   end = time.perf_counter_ns()
   return end - start
@@ -41,7 +44,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'PonyORM. Test 7. Nested find first\n'
+    f'PonyORM. Test 7. Find with limit and include parent\n'
     f'elapsed_ns={elapsed}'
   )
 

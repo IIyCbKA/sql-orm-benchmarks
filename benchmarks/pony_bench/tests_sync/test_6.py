@@ -8,11 +8,15 @@ import time
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
+def generate_book_ref(i: int) -> str:
+  return f'a{i:05d}'
+
+
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
   with db_session:
-    _ = Booking.select().order_by(Booking.book_ref).first()
+    _ = Booking.get(book_ref=generate_book_ref(1))
 
   end = time.perf_counter_ns()
   return end - start
@@ -31,7 +35,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'PonyORM. Test 6. Find first\n'
+    f'PonyORM. Test 6. Find unique record\n'
     f'elapsed_ns={elapsed}'
   )
 

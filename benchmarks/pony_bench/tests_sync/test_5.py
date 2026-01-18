@@ -12,7 +12,7 @@ def select_iteration() -> int:
   start = time.perf_counter_ns()
 
   with db_session:
-    _ = list(Booking.select())
+    _ = Booking.select().order_by(Booking.book_ref).first()
 
   end = time.perf_counter_ns()
   return end - start
@@ -31,7 +31,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'PonyORM. Test 5. Find all\n'
+    f'PonyORM. Test 5. Find first\n'
     f'elapsed_ns={elapsed}'
   )
 

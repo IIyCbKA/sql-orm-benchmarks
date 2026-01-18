@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, UTC
+from decimal import Decimal
 from pony.orm import db_session
 from core.models import Booking
 import os
@@ -5,18 +7,25 @@ import statistics
 import sys
 import time
 
+LIMIT = int(os.environ.get('LIMIT', '250'))
+OFFSET = int(os.environ.get('OFFSET', '500'))
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
-
-def generate_book_ref(i: int) -> str:
-  return f'a{i:05d}'
+NOW = datetime.now(UTC)
+DATE_FROM = NOW - timedelta(days=30)
+AMOUNT_LOW = Decimal('50.00')
+AMOUNT_HIGH = Decimal('500.00')
 
 
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
   with db_session:
-    _ = Booking.get(book_ref=generate_book_ref(1))
+    _ = list(Booking.select(lambda b:
+      b.total_amount >= AMOUNT_LOW
+      and b.total_amount <= AMOUNT_HIGH
+      and b.book_date >= DATE_FROM
+    ).order_by(lambda b: b.total_amount)[OFFSET: OFFSET + LIMIT])
 
   end = time.perf_counter_ns()
   return end - start
@@ -35,7 +44,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'PonyORM. Test 8. Find unique\n'
+    f'PonyORM. Test 8. Find with filter, offset pagination and sort\n'
     f'elapsed_ns={elapsed}'
   )
 
