@@ -1,7 +1,6 @@
-from datetime import timedelta
 from decimal import Decimal
+from functools import lru_cache
 import os
-import statistics
 import sys
 import time
 
@@ -10,44 +9,45 @@ django.setup()
 
 from core.models import Booking
 from django.utils import timezone
+from django.db import transaction
 
-LIMIT = int(os.environ.get('LIMIT', '250'))
-OFFSET = int(os.environ.get('OFFSET', '500'))
-SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
-
-NOW = timezone.now()
-DATE_FROM = NOW - timedelta(days=30)
-AMOUNT_LOW = Decimal('50.00')
-AMOUNT_HIGH = Decimal('500.00')
+COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
-def select_iteration() -> int:
-  start = time.perf_counter_ns()
+def generate_book_ref(i: int) -> str:
+  return f'a{i:05d}'
 
-  _ = list(Booking.objects.filter(
-    total_amount__gte=AMOUNT_LOW,
-    total_amount__lte=AMOUNT_HIGH,
-    book_date__gte=DATE_FROM
-  ).order_by('total_amount')[OFFSET:OFFSET + LIMIT])
 
-  end = time.perf_counter_ns()
-  return end - start
+@lru_cache(1)
+def get_curr_date():
+  return timezone.now()
 
 
 def main() -> None:
-  results: list[int] = []
-
   try:
-    for _ in range(SELECT_REPEATS):
-      results.append(select_iteration())
+    refs = [generate_book_ref(i) for i in range(COUNT)]
+    bookings = list(Booking.objects.filter(book_ref__in=refs))
   except Exception as e:
-    print(f'[ERROR] Test 10 failed: {e}')
+    print(f'[ERROR] Test 10 failed (data preparation): {e}')
     sys.exit(1)
 
-  elapsed = statistics.median(results)
+  start = time.perf_counter_ns()
+
+  try:
+    with transaction.atomic():
+      for booking in bookings:
+        booking.total_amount /= Decimal('10.00')
+        booking.book_date = get_curr_date()
+        booking.save(update_fields=['total_amount', 'book_date'])
+  except Exception as e:
+    print(f'[ERROR] Test 10 failed (update phase): {e}')
+    sys.exit(1)
+
+  end = time.perf_counter_ns()
+  elapsed = end - start
 
   print(
-    f'Django ORM (sync). Test 10. Filter, paginate & sort\n'
+    f'Django ORM (sync). Test 10. Transaction update. {COUNT} entries\n'
     f'elapsed_ns={elapsed}'
   )
 

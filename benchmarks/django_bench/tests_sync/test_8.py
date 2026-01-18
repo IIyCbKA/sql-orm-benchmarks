@@ -1,3 +1,5 @@
+from datetime import timedelta
+from decimal import Decimal
 import os
 import statistics
 import sys
@@ -7,18 +9,26 @@ import django
 django.setup()
 
 from core.models import Booking
+from django.utils import timezone
 
+LIMIT = int(os.environ.get('LIMIT', '250'))
+OFFSET = int(os.environ.get('OFFSET', '500'))
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
-
-def generate_book_ref(i: int) -> str:
-  return f'a{i:05d}'
+NOW = timezone.now()
+DATE_FROM = NOW - timedelta(days=30)
+AMOUNT_LOW = Decimal('50.00')
+AMOUNT_HIGH = Decimal('500.00')
 
 
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  _ = Booking.objects.get(pk=generate_book_ref(1))
+  _ = list(Booking.objects.filter(
+    total_amount__gte=AMOUNT_LOW,
+    total_amount__lte=AMOUNT_HIGH,
+    book_date__gte=DATE_FROM
+  ).order_by('total_amount')[OFFSET:OFFSET + LIMIT])
 
   end = time.perf_counter_ns()
   return end - start
@@ -37,7 +47,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'Django ORM (sync). Test 8. Find unique\n'
+    f'Django ORM (sync). Test 8. Find with filter, offset pagination and sort\n'
     f'elapsed_ns={elapsed}'
   )
 

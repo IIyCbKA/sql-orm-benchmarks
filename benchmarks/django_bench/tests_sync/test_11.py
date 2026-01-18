@@ -8,8 +8,8 @@ import django
 django.setup()
 
 from core.models import Booking
+from django.db.models import F
 from django.utils import timezone
-from django.db import transaction
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
@@ -26,7 +26,6 @@ def get_curr_date():
 def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = list(Booking.objects.filter(book_ref__in=refs))
   except Exception as e:
     print(f'[ERROR] Test 11 failed (data preparation): {e}')
     sys.exit(1)
@@ -34,11 +33,10 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    with transaction.atomic():
-      for booking in bookings:
-        booking.total_amount /= Decimal('10.00')
-        booking.book_date = get_curr_date()
-        booking.save(update_fields=['total_amount', 'book_date'])
+    Booking.objects.filter(book_ref__in=refs).update(
+      total_amount=F('total_amount') + Decimal('10.00'),
+      book_date=get_curr_date(),
+    )
   except Exception as e:
     print(f'[ERROR] Test 11 failed (update phase): {e}')
     sys.exit(1)
@@ -47,7 +45,7 @@ def main() -> None:
   elapsed = end - start
 
   print(
-    f'Django ORM (sync). Test 11. Transaction update. {COUNT} entries\n'
+    f'Django ORM (sync). Test 11. Bulk update. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

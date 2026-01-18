@@ -14,7 +14,7 @@ SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  _ = list(Booking.objects.all())
+  _ = Booking.objects.first()
 
   end = time.perf_counter_ns()
   return end - start
@@ -33,7 +33,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'Django ORM (sync). Test 5. Find all\n'
+    f'Django ORM (sync). Test 5. Find first\n'
     f'elapsed_ns={elapsed}'
   )
 

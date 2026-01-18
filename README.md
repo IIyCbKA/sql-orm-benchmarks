@@ -89,20 +89,17 @@ Therefore, it is recommended to run *exclusively* the ready `start.sh`.
 1. Single create
 2. Transaction create
 3. Bulk create
-4. Nested create
-5. Find all
-6. Find first
-7. Nested find first
-8. Find unique
-9. Nested find
-10. Filter, paginate & sort
-11. Transaction update
-12. Single update
-13. Nested update
-14. Transaction delete
-15. Single delete 
-16. Bulk delete
-17. Nested delete
+4. Find all
+5. Find first
+6. Find unique record
+7. Find with limit and include parent
+8. Find with filter, offset pagination and sort
+9. Single update
+10. Transaction update
+11. Bulk update
+12. Single delete 
+13. Transaction delete
+14. Bulk delete
 
 ---
 

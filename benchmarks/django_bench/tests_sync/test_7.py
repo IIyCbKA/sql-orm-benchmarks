@@ -8,13 +8,14 @@ django.setup()
 
 from core.models import Ticket
 
+LIMIT = int(os.environ.get('LIMIT', '250'))
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  _ = Ticket.objects.select_related('book_ref').first()
+  _ = list(Ticket.objects.select_related('book_ref').order_by('ticket_no')[:LIMIT])
 
   end = time.perf_counter_ns()
   return end - start
@@ -33,7 +34,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'Django ORM (sync). Test 7. Nested find first\n'
+    f'Django ORM (sync). Test 7. Find with limit and include parent\n'
     f'elapsed_ns={elapsed}'
   )
 

@@ -1,20 +1,18 @@
-from decimal import Decimal
 import os
-import statistics
 import sys
 import time
 
 import django
 django.setup()
 
-from core.models import Booking, Ticket
+from core.models import Booking
 from django.db import transaction
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-  return f'd{i:05d}'
+  return f'b{i:05d}'
 
 
 def main() -> None:
@@ -25,28 +23,21 @@ def main() -> None:
     print(f'[ERROR] Test 13 failed (data preparation): {e}')
     sys.exit(1)
 
-  results: list[int] = []
+  start = time.perf_counter_ns()
 
   try:
-    for booking in bookings:
-      start = time.perf_counter_ns()
-
-      with transaction.atomic():
-        booking.total_amount += Decimal('10.00')
-        booking.save(update_fields=['total_amount'])
-        Ticket.objects.filter(
-          book_ref=booking.book_ref).update(passenger_name='Nested update')
-
-      end = time.perf_counter_ns()
-      results.append(end - start)
+    with transaction.atomic():
+      for booking in bookings:
+        booking.delete()
   except Exception as e:
-    print(f'[ERROR] Test 13 failed (update phase): {e}')
+    print(f'[ERROR] Test 13 failed (delete phase): {e}')
     sys.exit(1)
 
-  elapsed = statistics.median(results)
+  end = time.perf_counter_ns()
+  elapsed = end - start
 
   print(
-    f'Django ORM (sync). Test 13. Nested update\n'
+    f'Django ORM (sync). Test 13. Transaction delete. {COUNT} entries\n'
     f'elapsed_ns={elapsed}'
   )
 

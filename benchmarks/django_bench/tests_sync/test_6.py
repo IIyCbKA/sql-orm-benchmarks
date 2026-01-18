@@ -11,10 +11,14 @@ from core.models import Booking
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
+def generate_book_ref(i: int) -> str:
+  return f'a{i:05d}'
+
+
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  _ = Booking.objects.first()
+  _ = Booking.objects.get(pk=generate_book_ref(1))
 
   end = time.perf_counter_ns()
   return end - start
@@ -33,7 +37,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'Django ORM (sync). Test 6. Find first\n'
+    f'Django ORM (sync). Test 6. Find unique record\n'
     f'elapsed_ns={elapsed}'
   )
 
