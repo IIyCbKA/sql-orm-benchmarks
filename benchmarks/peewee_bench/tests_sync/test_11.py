@@ -1,10 +1,11 @@
-from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
+from datetime import datetime, UTC
+from core.models import Booking
+from core.database import db
 import os
 import sys
 import time
-from tests_sync.db import conn
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
@@ -28,13 +29,11 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    with conn.cursor() as cur:
-      cur.execute("""
-        UPDATE bookings.bookings
-        SET total_amount = total_amount + %s,
-            book_date    = %s
-        WHERE book_ref = ANY (%s::char(6)[])
-      """, (Decimal('10.00'), get_curr_date(), refs))
+    with db.connection_context():
+      Booking.update(
+        total_amount=Booking.total_amount + Decimal('10.00'),
+        book_date=get_curr_date(),
+      ).where(Booking.book_ref.in_(refs)).execute()
   except Exception as e:
     print(f'[ERROR] Test 11 failed (update phase): {e}')
     sys.exit(1)
@@ -43,7 +42,7 @@ def main() -> None:
   elapsed = end - start
 
   print(
-    f'Pure SQL (psycopg3). Test 11. Bulk update. {COUNT} entries\n'
+    f'Peewee ORM (sync). Test 11. Bulk update. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

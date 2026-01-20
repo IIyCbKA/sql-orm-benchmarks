@@ -1,11 +1,12 @@
-from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
+from datetime import datetime, UTC
+from core.models import Booking
+from core.database import db
 import os
 import statistics
 import sys
 import time
-from tests_sync.db import conn
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
@@ -27,11 +28,12 @@ def get_curr_date():
 def create_iteration(i: int) -> int:
   start = time.perf_counter_ns()
 
-  with conn.cursor() as cur:
-    cur.execute("""
-      INSERT INTO bookings.bookings (book_ref, book_date, total_amount)
-      VALUES (%s, %s, %s)
-    """, (generate_book_ref(i), get_curr_date(), generate_amount(i)))
+  with db.connection_context():
+    Booking.create(
+      book_ref=generate_book_ref(i),
+      book_date=get_curr_date(),
+      total_amount=generate_amount(i),
+    )
 
   end = time.perf_counter_ns()
   return end - start
@@ -50,7 +52,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'Pure SQL (psycopg3). Test 1. Single create\n'
+    f'Peewee ORM (sync). Test 1. Single create. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

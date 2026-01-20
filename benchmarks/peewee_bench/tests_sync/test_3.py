@@ -1,11 +1,11 @@
-from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
-import itertools
+from datetime import datetime, UTC
+from core.models import Booking
+from core.database import db
 import os
-import time
 import sys
-from tests_sync.db import conn
+import time
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
@@ -29,17 +29,15 @@ def main() -> None:
 
   try:
     rows = [
-      (generate_book_ref(i), get_curr_date(), generate_amount(i))
-      for i in range(COUNT)
+      {
+        "book_ref": generate_book_ref(i),
+        "book_date": get_curr_date(),
+        "total_amount": generate_amount(i)
+      } for i in range(COUNT)
     ]
-    values = ', '.join(['(%s,%s,%s)'] * len(rows))
-    query = (
-        "INSERT INTO bookings.bookings (book_ref, book_date, total_amount) "
-        f"VALUES {values}"
-    )
-    params = list(itertools.chain.from_iterable(rows))
-    with conn.cursor() as cur:
-      cur.execute(query, params)
+
+    with db.connection_context():
+      Booking.insert_many(rows).execute()
   except Exception as e:
     print(f'[ERROR] Test 3 failed: {e}')
     sys.exit(1)
@@ -48,7 +46,7 @@ def main() -> None:
   elapsed = end - start
 
   print(
-    f'Pure SQL (psycopg3). Test 3. Bulk create. {COUNT} entities\n'
+    f'Peewee ORM (sync). Test 3. Bulk create. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

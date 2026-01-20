@@ -4,7 +4,7 @@ FROM python:3.12-slim-bookworm AS builder
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-WORKDIR /sql_bench
+WORKDIR /peewee_bench
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends  \
@@ -28,7 +28,7 @@ RUN apt-get update && \
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-WORKDIR /sql_bench
+WORKDIR /peewee_bench
 
 COPY --from=builder /wheels /wheels
 COPY requirements.txt ./
@@ -37,23 +37,12 @@ RUN pip install --no-cache-dir --no-index --find-links /wheels \
     rm -rf /wheels
 
 COPY . .
-RUN chmod +x /sql_bench/tests_sync/run.sh
-RUN chmod +x /sql_bench/tests_async/run.sh
+RUN chmod +x /peewee_bench/tests_sync/run.sh
 
 RUN printf '%s\n' '#!/bin/sh' \
-  'set -e' \
-  '' \
-  'case "$1" in' \
-  '  sync)' \
-  '    exec /sql_bench/tests_sync/run.sh' \
-  '    ;;' \
-  '  async)' \
-  '    exec /sql_bench/tests_async/run.sh' \
-  '    ;;' \
-  '  *)' \
-  '    exec /sql_bench/tests_sync/run.sh ' \
-  '    ;;' \
-  'esac' > /entrypoint.sh \
+    'set -e' \
+    '' \
+    'exec /peewee_bench/tests_sync/run.sh' > /entrypoint.sh \
 && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
