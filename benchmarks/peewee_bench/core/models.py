@@ -1,4 +1,4 @@
-from database import db
+from .database import db
 from peewee import (
   Model, CharField, DateTimeField, DecimalField,
   TextField, BooleanField, ForeignKeyField
