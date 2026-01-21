@@ -2,7 +2,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
 from sqlalchemy import update
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 import os
 import sys
@@ -49,7 +49,7 @@ def main() -> None:
   elapsed = end - start
 
   print(
-    f'SQLAlchemy (sync). Test 11. Bulk update. {COUNT} entries\n'
+    f'SQLModel (sync). Test 11. Bulk update. {COUNT} entries\n'
     f'elapsed_ns={elapsed}'
   )
 

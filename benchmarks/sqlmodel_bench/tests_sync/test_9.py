@@ -2,9 +2,10 @@ from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
 from sqlalchemy import select
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 import os
+import statistics
 import sys
 import time
 
@@ -28,25 +29,29 @@ def main() -> None:
       bookings = session.execute(stmt).scalars().all()
       session.commit()
     except Exception as e:
-      print(f'[ERROR] Test 10 failed (data preparation): {e}')
+      print(f'[ERROR] Test 9 failed (data preparation): {e}')
       sys.exit(1)
 
-    start = time.perf_counter_ns()
+    results: list[int] = []
 
     try:
-      with session.begin():
-        for booking in bookings:
-          booking.total_amount /= Decimal('10.00')
-          booking.book_date = get_curr_date()
+      for booking in bookings:
+        start = time.perf_counter_ns()
+
+        booking.total_amount /= Decimal('10.00')
+        booking.book_date = get_curr_date()
+        session.commit()
+
+        end = time.perf_counter_ns()
+        results.append(end - start)
     except Exception as e:
-      print(f'[ERROR] Test 10 failed (update phase): {e}')
+      print(f'[ERROR] Test 9 failed (update phase): {e}')
       sys.exit(1)
 
-    end = time.perf_counter_ns()
-    elapsed = end - start
+    elapsed = statistics.median(results)
 
     print(
-      f'SQLAlchemy (sync). Test 10. Transaction update. {COUNT} entries\n'
+      f'SQLModel (sync). Test 9. Single update\n'
       f'elapsed_ns={elapsed}'
     )
 

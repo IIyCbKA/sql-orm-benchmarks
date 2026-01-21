@@ -6,7 +6,7 @@ import statistics
 import sys
 import time
 
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 
 LIMIT = int(os.environ.get('LIMIT', '250'))
@@ -52,7 +52,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'SQLAlchemy (sync). Test 8. Find with filter, offset pagination and sort\n'
+    f'SQLModel (sync). Test 8. Find with filter, offset pagination and sort\n'
     f'elapsed_ns={elapsed}'
   )
 

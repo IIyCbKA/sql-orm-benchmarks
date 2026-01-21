@@ -1,7 +1,8 @@
 from sqlalchemy import select
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 import os
+import statistics
 import sys
 import time
 
@@ -9,7 +10,7 @@ COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-  return f'b{i:05d}'
+  return f'a{i:05d}'
 
 
 def main() -> None:
@@ -20,27 +21,31 @@ def main() -> None:
       bookings = session.execute(stmt).scalars().all()
       session.commit()
     except Exception as e:
-      print(f'[ERROR] Test 13 failed (data preparation): {e}')
+      print(f'[ERROR] Test 12 failed (data preparation): {e}')
       sys.exit(1)
 
-    start = time.perf_counter_ns()
+    results: list[int] = []
 
     try:
-      with session.begin():
-        for booking in bookings:
-          session.delete(booking)
+      for booking in bookings:
+        start = time.perf_counter_ns()
+
+        session.delete(booking)
+        session.commit()
+
+        end = time.perf_counter_ns()
+        results.append(end - start)
     except Exception as e:
-      print(f'[ERROR] Test 13 failed (delete phase): {e}')
+      print(f'[ERROR] Test 12 failed (delete phase): {e}')
       sys.exit(1)
 
-    end = time.perf_counter_ns()
-    elapsed = end - start
+    elapsed = statistics.median(results)
 
     print(
-      f'SQLAlchemy (sync). Test 13. Transaction delete. {COUNT} entries\n'
+      f'SQLModel (sync). Test 12. Single delete\n'
       f'elapsed_ns={elapsed}'
     )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

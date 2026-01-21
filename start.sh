@@ -32,6 +32,7 @@ declare -A MAP=(
   ["peewee"]="./benchmarks/peewee_bench"
   ["pony"]="./benchmarks/pony_bench"
   ["sqlalchemy"]="./benchmarks/sqlalchemy_bench"
+  ["sqlmodel"]="./benchmarks/sqlmodel_bench"
 )
 
 declare -A MODES_MAP=(
@@ -39,18 +40,19 @@ declare -A MODES_MAP=(
   ["peewee"]="sync"
   ["pony"]="sync"
   ["sqlalchemy"]="sync async"
+  ["sqlmodel"]="sync"
 )
 
 NAME="${1:-}"
 MODE="${2:-sync}"
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <solution-name>"
+  echo "Usage: $0 <orm-name>"
   exit 1
 fi
 
 CONTEXT="${MAP[$NAME]:-}"
 if [ -z "$CONTEXT" ]; then
-  echo "ERROR: unknown solution name: '$NAME'. Available: ${!MAP[@]}" >&2
+  echo "ERROR: unknown ORM name: '$NAME'. Available: ${!MAP[@]}" >&2
   exit 2
 fi
 
@@ -65,7 +67,7 @@ for m in $ALLOWED; do
 done
 
 if [ "$ok" -ne 1 ]; then
-  echo "ERROR: unknown mode: '$MODE' for solution '$NAME'. Available: $ALLOWED" >&2
+  echo "ERROR: unknown mode: '$MODE' for ORM '$NAME'. Available: $ALLOWED" >&2
   exit 3
 fi
 

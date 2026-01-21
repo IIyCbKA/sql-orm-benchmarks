@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 import os
 import sys
@@ -37,7 +37,7 @@ def main() -> None:
     elapsed = end - start
 
     print(
-      f'SQLAlchemy (sync). Test 13. Transaction delete. {COUNT} entries\n'
+      f'SQLModel (sync). Test 13. Transaction delete. {COUNT} entries\n'
       f'elapsed_ns={elapsed}'
     )
 

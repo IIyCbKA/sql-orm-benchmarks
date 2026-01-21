@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking, Ticket
 import os
 import statistics
@@ -48,7 +48,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'SQLAlchemy (sync). Test 7. Find with limit and include parent\n'
+    f'SQLModel (sync). Test 7. Find with limit and include parent\n'
     f'elapsed_ns={elapsed}'
   )
 

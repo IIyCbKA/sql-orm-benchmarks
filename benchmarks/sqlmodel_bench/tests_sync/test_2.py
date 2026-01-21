@@ -5,14 +5,14 @@ import os
 import sys
 import time
 
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
 
 
 def generate_book_ref(i: int) -> str:
-  return f'c{i:05d}'
+  return f'b{i:05d}'
 
 
 def generate_amount(i: int) -> Decimal:
@@ -29,26 +29,23 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    objs = [
-      Booking(
-        book_ref=generate_book_ref(i),
-        book_date=get_curr_date(),
-        total_amount=generate_amount(i),
-      )
-      for i in range(COUNT)
-    ]
-
     with SessionLocal() as session:
-      session.bulk_save_objects(objs)
+      with session.begin():
+        for i in range(COUNT):
+          session.add(Booking(
+            book_ref=generate_book_ref(i),
+            book_date=get_curr_date(),
+            total_amount=generate_amount(i),
+          ))
   except Exception as e:
-    print(f'[ERROR] Test 3 failed: {e}')
+    print(f'[ERROR] Test 2 failed: {e}')
     sys.exit(1)
 
   end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
-    f'SQLAlchemy (sync). Test 3. Bulk create. {COUNT} entities\n'
+    f'SQLModel (sync). Test 2. Transaction create. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

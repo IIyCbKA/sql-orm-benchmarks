@@ -1,4 +1,4 @@
-ORM & SQL Performance Bench [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IIyCbKA/sql-orm-benchmarks/blob/main/LICENSE) [![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/downloads/release/python-3120/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
+Python ORMs performance bench [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/IIyCbKA/sql-orm-benchmarks/blob/main/LICENSE) [![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/downloads/release/python-3120/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
 ==============
 
 A reproducible benchmarking project to compare popular Python ORMs on PostgreSQL.
@@ -63,10 +63,11 @@ name from this list for `./start.sh`):
 - peewee
 - pony
 - sqlalchemy
+- sqlmodel
 
 List of modes for ORMs (use the mode name from this list for `./start.sh`, 
 with selected ORM. Default is sync):
-- sync: django | pony | sqlalchemy | peewee
+- sync: django | pony | sqlalchemy | peewee | sqlmodel
 - async (coming soon): django | sqlalchemy
 
 **IMPORTANT NOTE:** On each fresh run of `docker-compose` (this is done 

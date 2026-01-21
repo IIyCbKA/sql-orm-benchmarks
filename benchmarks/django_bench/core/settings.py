@@ -36,9 +36,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.contenttypes',
-    'django.contrib.staticfiles',
-    'core',
+  'django.contrib.contenttypes',
+  'django.contrib.staticfiles',
+  'core',
 ]
 
 MIDDLEWARE = []
@@ -47,39 +47,39 @@ MIDDLEWARE = []
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'CONN_MAX_AGE': 0,
-        'OPTIONS': {
-            'pool': {
-                'min_size': 1,
-                'max_size': 25,
-                'max_lifetime': 3600,
-                'max_idle': 600,
-                'timeout': 30,
-            },
-        },
-    }
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+    'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+    'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+    'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+    'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+    'CONN_MAX_AGE': 0,
+    'OPTIONS': {
+      'pool': {
+        'min_size': 1,
+        'max_size': 25,
+        'max_lifetime': 3600,
+        'max_idle': 600,
+        'timeout': 30,
+      },
+    },
+  }
 }
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+  'version': 1,
+  'disable_existing_loggers': False,
+  'handlers': {
+    'console': {'class': 'logging.StreamHandler'},
+  },
+  'loggers': {
+    'django.db.backends': {
+      'handlers': ['console'],
+      'level': 'DEBUG',
+      'propagate': False,
     },
-    "loggers": {
-        "django.db.backends": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
+  },
 }
 
 # Internationalization

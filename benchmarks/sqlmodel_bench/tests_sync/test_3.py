@@ -5,7 +5,7 @@ import os
 import sys
 import time
 
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
@@ -48,7 +48,7 @@ def main() -> None:
   elapsed = end - start
 
   print(
-    f'SQLAlchemy (sync). Test 3. Bulk create. {COUNT} entities\n'
+    f'SQLModel (sync). Test 3. Bulk create. {COUNT} entities\n'
     f'elapsed_ns={elapsed}'
   )
 

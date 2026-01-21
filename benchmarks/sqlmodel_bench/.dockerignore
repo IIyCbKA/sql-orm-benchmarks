@@ -1,0 +1,15 @@
+# python artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# virtual environment
+.venv
+
+# system files of Git
+.gitignore
+.git
+
+# config & ignore
+Dockerfile
+.dockerignore

@@ -1,4 +1,4 @@
-from tests_sync.db import SessionLocal
+from .database import SessionLocal
 from core.models import Booking
 import os
 import statistics
@@ -35,7 +35,7 @@ def main() -> None:
   elapsed = statistics.median(results)
 
   print(
-    f'SQLAlchemy (sync). Test 6. Find unique record\n'
+    f'SQLModel (sync). Test 6. Find unique record\n'
     f'elapsed_ns={elapsed}'
   )
 
