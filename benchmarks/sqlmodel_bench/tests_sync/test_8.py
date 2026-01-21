@@ -6,7 +6,7 @@ import statistics
 import sys
 import time
 
-from .database import SessionLocal
+from tests_sync.database import SessionLocal
 from core.models import Booking
 
 LIMIT = int(os.environ.get('LIMIT', '250'))

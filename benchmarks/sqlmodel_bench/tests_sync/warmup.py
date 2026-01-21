@@ -2,7 +2,7 @@ from decimal import Decimal
 from datetime import datetime, UTC
 from sqlalchemy import select
 from core.models import Booking, Ticket
-from .database import SessionLocal
+from tests_sync.database import SessionLocal
 import os
 import sys
 

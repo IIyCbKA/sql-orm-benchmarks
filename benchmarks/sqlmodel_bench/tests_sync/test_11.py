@@ -2,7 +2,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
 from sqlalchemy import update
-from .database import SessionLocal
+from tests_sync.database import SessionLocal
 from core.models import Booking
 import os
 import sys

@@ -5,7 +5,7 @@ import os
 import sys
 import time
 
-from .database import SessionLocal
+from tests_sync.database import SessionLocal
 from core.models import Booking
 
 COUNT = int(os.environ.get('ITERATIONS', '2500'))
