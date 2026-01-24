@@ -26,16 +26,17 @@ def get_curr_date():
 
 
 def create_iteration(i: int) -> int:
-  start = time.perf_counter_ns()
-
   with db.connection_context():
+    start = time.perf_counter_ns()
+
     Booking.create(
       book_ref=generate_book_ref(i),
       book_date=get_curr_date(),
       total_amount=generate_amount(i),
     )
 
-  end = time.perf_counter_ns()
+    end = time.perf_counter_ns()
+
   return end - start
 
 

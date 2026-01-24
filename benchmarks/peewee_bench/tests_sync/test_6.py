@@ -13,12 +13,13 @@ def generate_book_ref(i: int) -> str:
 
 
 def select_iteration() -> int:
-  start = time.perf_counter_ns()
-
   with db.connection_context():
+    start = time.perf_counter_ns()
+
     _ = Booking.get_by_id(generate_book_ref(1))
 
-  end = time.perf_counter_ns()
+    end = time.perf_counter_ns()
+
   return end - start
 
 

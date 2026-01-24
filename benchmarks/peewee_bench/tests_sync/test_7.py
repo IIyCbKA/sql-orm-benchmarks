@@ -10,9 +10,9 @@ SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
 def select_iteration() -> int:
-  start = time.perf_counter_ns()
-
   with db.connection_context():
+    start = time.perf_counter_ns()
+
     _ = list(Ticket
       .select(
         Ticket.ticket_no,
@@ -28,7 +28,8 @@ def select_iteration() -> int:
     .order_by(Ticket.ticket_no)
     .limit(LIMIT))
 
-  end = time.perf_counter_ns()
+    end = time.perf_counter_ns()
+
   return end - start
 
 

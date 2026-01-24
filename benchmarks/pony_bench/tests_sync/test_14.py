@@ -11,7 +11,6 @@ def generate_book_ref(i: int) -> str:
   return f'c{i:05d}'
 
 
-@db_session
 def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
@@ -19,16 +18,18 @@ def main() -> None:
     print(f'[ERROR] Test 14 failed (data preparation): {e}')
     sys.exit(1)
 
-  start = time.perf_counter_ns()
-
   try:
-    Booking.select(lambda b: b.book_ref in refs).delete(bulk=True)
-    commit()
+    with db_session:
+      start = time.perf_counter_ns()
+
+      Booking.select(lambda b: b.book_ref in refs).delete(bulk=True)
+      commit()
+
+      end = time.perf_counter_ns()
   except Exception as e:
     print(f'[ERROR] Test 14 failed (delete phase): {e}')
     sys.exit(1)
 
-  end = time.perf_counter_ns()
   elapsed = end - start
 
   print(

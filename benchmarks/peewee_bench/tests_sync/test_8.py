@@ -18,9 +18,9 @@ AMOUNT_HIGH = Decimal('500.00')
 
 
 def select_iteration() -> int:
-  start = time.perf_counter_ns()
-
   with db.connection_context():
+    start = time.perf_counter_ns()
+
     _ = list(Booking
       .select()
       .where(
@@ -32,7 +32,8 @@ def select_iteration() -> int:
       .offset(OFFSET)
       .limit(LIMIT))
 
-  end = time.perf_counter_ns()
+    end = time.perf_counter_ns()
+
   return end - start
 
 

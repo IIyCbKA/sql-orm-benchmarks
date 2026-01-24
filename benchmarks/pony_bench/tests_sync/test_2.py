@@ -26,9 +26,9 @@ def get_curr_date():
 
 @db_session
 def main() -> None:
-  start = time.perf_counter_ns()
-
   try:
+    start = time.perf_counter_ns()
+
     for i in range(COUNT):
       Booking(
         book_ref=generate_book_ref(i),
@@ -36,11 +36,12 @@ def main() -> None:
         total_amount=generate_amount(i),
       )
     commit()
+
+    end = time.perf_counter_ns()
   except Exception as e:
     print(f'[ERROR] Test 2 failed: {e}')
     sys.exit(1)
 
-  end = time.perf_counter_ns()
   elapsed = end - start
 
   print(

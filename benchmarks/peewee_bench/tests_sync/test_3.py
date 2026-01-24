@@ -25,24 +25,25 @@ def get_curr_date():
 
 
 def main() -> None:
-  start = time.perf_counter_ns()
-
   try:
-    rows = [
-      {
-        "book_ref": generate_book_ref(i),
-        "book_date": get_curr_date(),
-        "total_amount": generate_amount(i)
-      } for i in range(COUNT)
-    ]
-
     with db.connection_context():
+      start = time.perf_counter_ns()
+
+      rows = [
+        {
+          'book_ref': generate_book_ref(i),
+          'book_date': get_curr_date(),
+          'total_amount': generate_amount(i)
+        } for i in range(COUNT)
+      ]
+
       Booking.insert_many(rows).execute()
+
+      end = time.perf_counter_ns()
   except Exception as e:
     print(f'[ERROR] Test 3 failed: {e}')
     sys.exit(1)
 
-  end = time.perf_counter_ns()
   elapsed = end - start
 
   print(

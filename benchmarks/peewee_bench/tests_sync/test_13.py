@@ -20,23 +20,24 @@ def main() -> None:
       print(f'[ERROR] Test 13 failed (data preparation): {e}')
       sys.exit(1)
 
-    start = time.perf_counter_ns()
-
     try:
+      start = time.perf_counter_ns()
+
       with db.atomic():
         for booking in bookings:
           booking.delete_instance()
+
+      end = time.perf_counter_ns()
     except Exception as e:
       print(f'[ERROR] Test 13 failed (delete phase): {e}')
       sys.exit(1)
 
-    end = time.perf_counter_ns()
-    elapsed = end - start
+  elapsed = end - start
 
-    print(
-      f'Peewee ORM (sync). Test 13. Transaction delete. {COUNT} entities\n'
-      f'elapsed_ns={elapsed}'
-    )
+  print(
+    f'Peewee ORM (sync). Test 13. Transaction delete. {COUNT} entities\n'
+    f'elapsed_ns={elapsed}'
+  )
 
 
 if __name__ == '__main__':

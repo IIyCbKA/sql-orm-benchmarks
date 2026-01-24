@@ -25,10 +25,10 @@ def get_curr_date():
 
 
 def main() -> None:
-  start = time.perf_counter_ns()
-
   try:
     with db.connection_context():
+      start = time.perf_counter_ns()
+
       with db.atomic():
         for i in range(COUNT):
           Booking.create(
@@ -36,11 +36,12 @@ def main() -> None:
             book_date=get_curr_date(),
             total_amount=generate_amount(i),
           )
+
+      end = time.perf_counter_ns()
   except Exception as e:
     print(f'[ERROR] Test 2 failed: {e}')
     sys.exit(1)
 
-  end = time.perf_counter_ns()
   elapsed = end - start
 
   print(
