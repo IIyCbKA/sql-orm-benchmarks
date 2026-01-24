@@ -1,4 +1,4 @@
-from pony.orm import db_session
+from pony.orm import db_session, commit
 from core.models import Booking
 import os
 import sys
@@ -11,6 +11,7 @@ def generate_book_ref(i: int) -> str:
   return f'c{i:05d}'
 
 
+@db_session
 def main() -> None:
   try:
     refs = [generate_book_ref(i) for i in range(COUNT)]
@@ -21,8 +22,8 @@ def main() -> None:
   start = time.perf_counter_ns()
 
   try:
-    with db_session:
-      Booking.select(lambda b: b.book_ref in refs).delete(bulk=True)
+    Booking.select(lambda b: b.book_ref in refs).delete(bulk=True)
+    commit()
   except Exception as e:
     print(f'[ERROR] Test 14 failed (delete phase): {e}')
     sys.exit(1)

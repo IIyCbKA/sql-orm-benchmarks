@@ -12,11 +12,11 @@ def generate_book_ref(i: int) -> str:
   return f'a{i:05d}'
 
 
+@db_session
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  with db_session:
-    _ = Booking.get(book_ref=generate_book_ref(1))
+  _ = Booking.get(book_ref=generate_book_ref(1))
 
   end = time.perf_counter_ns()
   return end - start

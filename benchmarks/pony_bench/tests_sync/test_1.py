@@ -25,15 +25,16 @@ def get_curr_date():
   return datetime.now(UTC)
 
 
+@db_session
 def create_iteration(i: int) -> int:
   start = time.perf_counter_ns()
 
-  with db_session:
-    Booking(
-      book_ref=generate_book_ref(i),
-      book_date=get_curr_date(),
-      total_amount=generate_amount(i),
-    )
+  Booking(
+    book_ref=generate_book_ref(i),
+    book_date=get_curr_date(),
+    total_amount=generate_amount(i),
+  )
+  commit()
 
   end = time.perf_counter_ns()
   return end - start

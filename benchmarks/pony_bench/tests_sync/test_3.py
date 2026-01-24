@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
-from pony.orm import db_session
+from pony.orm import db_session, commit
 from core.models import Booking
 import os
 import sys
@@ -23,6 +23,7 @@ def get_curr_date():
   return datetime.now(UTC)
 
 
+@db_session
 def main() -> None:
   """
   Pony ORM does not support true bulk insert as of 16.01.2026.
@@ -36,13 +37,13 @@ def main() -> None:
   """
 
   try:
-    with db_session:
-      for i in range(COUNT):
-        Booking(
-          book_ref=generate_book_ref(i),
-          book_date=get_curr_date(),
-          total_amount=generate_amount(i),
-        )
+    for i in range(COUNT):
+      Booking(
+        book_ref=generate_book_ref(i),
+        book_date=get_curr_date(),
+        total_amount=generate_amount(i),
+      )
+    commit()
   except Exception as e:
     print(f'[ERROR] Dataset create failed (instead of bulk create): {e}')
     sys.exit(1)

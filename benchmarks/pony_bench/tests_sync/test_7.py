@@ -9,23 +9,23 @@ LIMIT = int(os.environ.get('LIMIT', '250'))
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
+@db_session
 def select_iteration() -> int:
   """
   order_by(1) equal order_by(ticket_no) in primitive notation
   """
   start = time.perf_counter_ns()
 
-  with db_session:
-    _ = list(select((
-        t.ticket_no,
-        t.book_ref.book_ref,
-        t.passenger_id,
-        t.passenger_name,
-        t.outbound,
-        t.book_ref.book_ref,
-        t.book_ref.book_date,
-        t.book_ref.total_amount
-    ) for t in Ticket).order_by(1)[:LIMIT])
+  _ = list(select((
+    t.ticket_no,
+    t.book_ref.book_ref,
+    t.passenger_id,
+    t.passenger_name,
+    t.outbound,
+    t.book_ref.book_ref,
+    t.book_ref.book_date,
+    t.book_ref.total_amount
+  ) for t in Ticket).order_by(1)[:LIMIT])
 
   end = time.perf_counter_ns()
   return end - start

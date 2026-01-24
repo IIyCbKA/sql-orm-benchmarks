@@ -8,11 +8,11 @@ import time
 SELECT_REPEATS = int(os.environ.get('SELECT_REPEATS', '75'))
 
 
+@db_session
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  with db_session:
-    _ = list(Booking.select())
+  _ = list(Booking.select())
 
   end = time.perf_counter_ns()
   return end - start

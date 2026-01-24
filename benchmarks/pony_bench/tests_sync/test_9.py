@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
-from pony.orm import db_session, commit, select
+from pony.orm import db_session, commit
 from core.models import Booking
 import os
 import statistics
@@ -21,28 +21,27 @@ def get_curr_date():
 
 
 @db_session
-def main() -> None:
-  try:
-    refs = [generate_book_ref(i) for i in range(COUNT)]
-    bookings = list(select(b for b in Booking if b.book_ref in refs))
-  except Exception as e:
-    print(f'[ERROR] Test 9 failed (data preparation): {e}')
-    sys.exit(1)
+def update_iteration(i: int) -> int:
+  booking = Booking.get(book_ref=generate_book_ref(i))
 
+  start = time.perf_counter_ns()
+
+  booking.total_amount /= Decimal('10.00')
+  booking.book_date = get_curr_date()
+  commit()
+
+  end = time.perf_counter_ns()
+  return end - start
+
+
+def main() -> None:
   results: list[int] = []
 
   try:
-    for booking in bookings:
-      start = time.perf_counter_ns()
-
-      booking.total_amount /= Decimal('10.00')
-      booking.book_date = get_curr_date()
-      commit()
-
-      end = time.perf_counter_ns()
-      results.append(end - start)
+    for i in range(COUNT):
+      results.append(update_iteration(i))
   except Exception as e:
-    print(f'[ERROR] Test 9 failed (update phase): {e}')
+    print(f'[ERROR] Test 9 failed: {e}')
     sys.exit(1)
 
   elapsed = statistics.median(results)

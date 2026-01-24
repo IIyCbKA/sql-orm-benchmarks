@@ -17,15 +17,15 @@ AMOUNT_LOW = Decimal('50.00')
 AMOUNT_HIGH = Decimal('500.00')
 
 
+@db_session
 def select_iteration() -> int:
   start = time.perf_counter_ns()
 
-  with db_session:
-    _ = list(Booking.select(lambda b:
-      b.total_amount >= AMOUNT_LOW
-      and b.total_amount <= AMOUNT_HIGH
-      and b.book_date >= DATE_FROM
-    ).order_by(lambda b: b.total_amount)[OFFSET: OFFSET + LIMIT])
+  _ = list(Booking.select(lambda b:
+    b.total_amount >= AMOUNT_LOW
+    and b.total_amount <= AMOUNT_HIGH
+    and b.book_date >= DATE_FROM
+  ).order_by(lambda b: b.total_amount)[OFFSET: OFFSET + LIMIT])
 
   end = time.perf_counter_ns()
   return end - start
