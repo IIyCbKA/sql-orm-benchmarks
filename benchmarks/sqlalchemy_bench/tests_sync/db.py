@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from dotenv import load_dotenv
 import os
 
@@ -17,8 +17,17 @@ DEBUG = 'debug' if os.environ.get('DEBUG', 'False') == 'True' else False
 
 engine = create_engine(DATABASE_URL, echo=DEBUG, future=True)
 
+
+class PreconnectedSession(Session):
+  def __enter__(self):
+    session = super().__enter__()
+    session.connection()
+    return session
+
+
 SessionLocal = sessionmaker(
   bind=engine,
+  class_=PreconnectedSession,
   autoflush=False,
   expire_on_commit=False,
   future=True

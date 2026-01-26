@@ -1,5 +1,5 @@
 from pony.orm import db_session, select
-from core.models import Ticket
+from core.models import Ticket, db
 import os
 import statistics
 import sys
@@ -14,6 +14,7 @@ def select_iteration() -> int:
   """
   order_by(1) equal order_by(ticket_no) in primitive notation
   """
+  db.get_connection()
   start = time.perf_counter_ns()
 
   _ = list(select((

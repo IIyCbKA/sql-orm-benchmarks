@@ -1,6 +1,6 @@
 from decimal import Decimal
 from pony.orm import db_session
-from core.models import Booking
+from core.models import Booking, db
 import os
 import statistics
 import sys
@@ -16,6 +16,7 @@ AMOUNT_HIGH = Decimal('500.00')
 
 @db_session
 def select_iteration() -> int:
+  db.get_connection()
   start = time.perf_counter_ns()
 
   _ = list(Booking.select(lambda b:

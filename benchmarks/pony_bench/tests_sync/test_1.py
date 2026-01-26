@@ -2,7 +2,7 @@ from datetime import datetime, UTC
 from decimal import Decimal
 from functools import lru_cache
 from pony.orm import db_session, commit
-from core.models import Booking
+from core.models import Booking, db
 import os
 import statistics
 import sys
@@ -27,6 +27,7 @@ def get_curr_date():
 
 @db_session
 def create_iteration(i: int) -> int:
+  db.get_connection()
   start = time.perf_counter_ns()
 
   Booking(

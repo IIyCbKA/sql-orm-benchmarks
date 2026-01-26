@@ -1,5 +1,5 @@
 from pony.orm import db_session
-from core.models import Booking
+from core.models import Booking, db
 import os
 import statistics
 import sys
@@ -14,6 +14,7 @@ def generate_book_ref(i: int) -> str:
 
 @db_session
 def select_iteration() -> int:
+  db.get_connection()
   start = time.perf_counter_ns()
 
   _ = Booking.get(book_ref=generate_book_ref(1))

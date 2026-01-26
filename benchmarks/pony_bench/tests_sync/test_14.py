@@ -1,5 +1,5 @@
 from pony.orm import db_session, commit
-from core.models import Booking
+from core.models import Booking, db
 import os
 import sys
 import time
@@ -20,6 +20,7 @@ def main() -> None:
 
   try:
     with db_session:
+      db.get_connection()
       start = time.perf_counter_ns()
 
       Booking.select(lambda b: b.book_ref in refs).delete(bulk=True)
