@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 from dotenv import load_dotenv
 import os
@@ -21,7 +21,8 @@ engine = create_engine(DATABASE_URL, echo=DEBUG, future=True)
 class PreconnectedSession(Session):
   def __enter__(self):
     session = super().__enter__()
-    session.connection()
+    session.execute(text('SELECT 1'))
+    session.rollback()
     return session
 
 
